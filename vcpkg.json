@@ -1,0 +1,6 @@
+{
+  "dependencies": [
+    "stb",
+    "eigen3"
+  ]
+}
