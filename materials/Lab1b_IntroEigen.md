@@ -14,7 +14,7 @@ The next line of the main function introduces a new type: 'VectorXd'. This repre
 To access the coefficient $A_{i,j}$ of the matrix $A$, use the syntax `A(i,j)`. Similarly, for accessing the component $v_{i}$ of a vector $\boldsymbol{v}$ 
 use `v(i)`
 
-```
+```cpp
 #include <iostream>
 #include <Eigen/Dense>
  
@@ -39,7 +39,7 @@ int main()
 3. In the container, make sure the Eigen module is loaded by typing: `module list`.
 
 4. Compile and run the test.
-```
+```cpp
 g++ -I ${mkEigenInc} eigen-test1.cpp -o test1
 ./test1
 ```
@@ -61,7 +61,7 @@ Individual columns and rows are special cases of blocks. Eigen provides methods 
 
 1. Example - compile and run the following code
 
-```
+```cpp
 #include <Eigen/Dense>
 #include <iostream>
  
@@ -122,7 +122,7 @@ To export an Eigen matrix as a `.png` file we use the header file stb_image_writ
 
 In the following example we import an RGB image in Eigen, we convert it as a greyscale image, and then we export it in `.png`.
 
-```
+```cpp
 #include <Eigen/Dense>
 #include <iostream>
 
@@ -201,7 +201,7 @@ int main(int argc, char* argv[]) {
 
 - 1. Load a greyscale image of your choice in Eigen using the following code
 
-```
+```cpp
 #include <Eigen/Dense>
 #include <iostream>
 #include <cstdlib>
