@@ -3,10 +3,26 @@ project(NLA_ch1)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(${PROJECT_NAME} main.cpp)
+# include lis library
+include_directories(extern/lis/include)
+link_directories(extern/lis/lib)
+
+file(
+        GLOB_RECURSE mains RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/solver.cpp"
+)
 
 find_package(Stb REQUIRED)
-target_include_directories(${PROJECT_NAME} PRIVATE ${Stb_INCLUDE_DIR})
-
 find_package(Eigen3 CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE Eigen3::Eigen)
+
+
+foreach (mainfile IN LISTS mains)
+    # Get file name without directory
+    get_filename_component(mainname ${mainfile} NAME_WE)
+    add_executable(${mainname} ${mainfile})
+    target_include_directories(${mainname} PRIVATE ${Stb_INCLUDE_DIR})
+    target_link_libraries(${mainname} PRIVATE Eigen3::Eigen)
+    # Link lis library
+    target_link_libraries(${mainname} PRIVATE lis)
+endforeach ()

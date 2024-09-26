@@ -7,10 +7,10 @@
 
 /* Define to a macro mangling the given C identifier (in lower and upper
    case), which must not contain underscores, for linking with Fortran. */
-/* #undef F77_FUNC */
+#define F77_FUNC(name,NAME) name ## _
 
 /* As F77_FUNC, but for C identifiers containing underscores. */
-/* #undef F77_FUNC_ */
+#define F77_FUNC_(name,NAME) name ## _
 
 /* Define if F77 and FC dummy 'main' functions are identical. */
 /* #undef FC_DUMMY_MAIN_EQ_F77 */
@@ -120,7 +120,7 @@
 #define STDC_HEADERS 1
 
 /* Define to 1 to enable complex scalar operations. */
-/* #undef USE_COMPLEX */
+#define USE_COMPLEX 1
 
 /* Define to 1 to enable quad precision operations using fast quad add. */
 /* #undef USE_FAST_QUAD_ADD */
@@ -129,7 +129,7 @@
 /* #undef USE_FMA2_SSE2 */
 
 /* Define to 1 to enable Fortran subroutines. */
-/* #undef USE_FORTRAN */
+#define USE_FORTRAN 1
 
 /* Use MAIN__ macro with Fortran. */
 /* #undef USE_MAIN__ */
@@ -138,7 +138,7 @@
 /* #undef USE_QUAD_PRECISION */
 
 /* Define to 1 to enable SA-AMG preconditioner. */
-/* #undef USE_SAAMG */
+#define USE_SAAMG 1
 
 /* Define to 1 to enable quad precision operations using SSE2. */
 /* #undef USE_SSE2 */

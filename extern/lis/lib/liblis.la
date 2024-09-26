@@ -5,10 +5,10 @@
 # It is necessary for linking the library.
 
 # The name that we can dlopen(3).
-dlname=''
+dlname='liblis.0.dylib'
 
 # Names of this library.
-library_names=''
+library_names='liblis.0.dylib liblis.dylib'
 
 # The name of the static archive.
 old_library='liblis.a'
@@ -38,4 +38,4 @@ dlopen=''
 dlpreopen=''
 
 # Directory that this library needs to be installed in:
-libdir='/Users/raopend/Workspace/NLA_ch1/extern/lib'
+libdir='/Users/raopend/Workspace/NLA_ch1/extern/lis/lib'
