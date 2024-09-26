@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <unsupported/Eigen/SparseExtra>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -83,41 +84,96 @@ MatrixXd convertToGrayscale(const MatrixXd &red, const MatrixXd &green, const Ma
 
 // Function to create a sparse matrix representing the A_avg 2 smoothing kernel
 SparseMatrix<double> createAAvg2Matrix(const int height, const int width) {
-    const int size = height * width; // 图像的总像素数
+    const long size = height * width; // 图像的总像素数
     SparseMatrix<double> S(size, size);
     std::vector<Triplet<double>> tripletList;
+    tripletList.reserve(size * 9); // Each pixel has up to 9 neighbors
 
-    // 遍历每个像素
+    // Iterate over every pixel in the image
     for (int i = 0; i < height; ++i) {
         for (int j = 0; j < width; ++j) {
-            int currentIndex = i * width + j;
-            int neighbors = 0;
+            long currentIndex = i * width + j;
 
-            // 添加邻域内像素的权重 (3x3 窗口)
             for (int di = -1; di <= 1; ++di) {
                 for (int dj = -1; dj <= 1; ++dj) {
-                    const int ni = i + di; // 邻域像素的行索引
+                    const int ni = i + di;
                     if (const int nj = j + dj; ni >= 0 && ni < height && nj >= 0 && nj < width) {
                         int neighborIndex = ni * width + nj;
                         tripletList.emplace_back(currentIndex, neighborIndex, 1.0 / 9.0);
-                        ++neighbors;
                     }
                 }
             }
         }
     }
 
-    // 构建稀疏矩阵
     S.setFromTriplets(tripletList.begin(), tripletList.end());
+
+    return S;
+}
+
+// Function to create a sparse matrix representing the A_avg 2 smoothing kernel using matrix shifts
+SparseMatrix<double> createAAvg2MatrixOptimized(int height, int width) {
+    const int size = height * width;
+    SparseMatrix<double> S(size, size);
+
+    // Identity matrix to represent the base image
+    SparseMatrix<double> I(size, size);
+    I.setIdentity();
+
+    // Define shifts in 8 different directions (left, right, up, down, diagonals)
+    SparseMatrix<double> shiftUp(size, size), shiftDown(size, size);
+    SparseMatrix<double> shiftLeft(size, size), shiftRight(size, size);
+    SparseMatrix<double> shiftUpLeft(size, size), shiftUpRight(size, size);
+    SparseMatrix<double> shiftDownLeft(size, size), shiftDownRight(size, size);
+
+    // Shift by one row (up and down)
+    shiftUp.reserve(size);
+    shiftDown.reserve(size);
+    for (int i = width; i < size; ++i) {
+        shiftUp.insert(i - width, i) = 1.0;
+        shiftDown.insert(i, i - width) = 1.0;
+    }
+
+    // Shift by one column (left and right)
+    shiftLeft.reserve(size);
+    shiftRight.reserve(size);
+    for (int i = 1; i < size; ++i) {
+        if (i % width != 0) {
+            shiftLeft.insert(i, i - 1) = 1.0;
+            shiftRight.insert(i - 1, i) = 1.0;
+        }
+    }
+
+    // Diagonal shifts (up-left, up-right, down-left, down-right)
+    shiftUpLeft.reserve(size);
+    shiftUpRight.reserve(size);
+    shiftDownLeft.reserve(size);
+    shiftDownRight.reserve(size);
+    for (int i = width + 1; i < size; ++i) {
+        if (i % width != 0) {
+            shiftUpLeft.insert(i - width - 1, i) = 1.0;
+            shiftDownRight.insert(i, i - width - 1) = 1.0;
+        }
+        if (i % width != width - 1) {
+            shiftUpRight.insert(i - width + 1, i) = 1.0;
+            shiftDownLeft.insert(i, i - width + 1) = 1.0;
+        }
+    }
+
+    // Combine all shifted matrices with equal weights (1/9 for average smoothing)
+    S = (I + shiftUp + shiftDown + shiftLeft + shiftRight + shiftUpLeft + shiftUpRight + shiftDownLeft +
+         shiftDownRight) /
+        9.0;
 
     return S;
 }
 
 // Function to create a sparse matrix representing the H_sh2 sharpening kernel
 SparseMatrix<double> createHsh2Matrix(const int height, const int width) {
-    const int size = height * width; // Total number of pixels in the image
+    const long size = height * width; // Total number of pixels in the image
     SparseMatrix<double> S(size, size);
     std::vector<Triplet<double>> tripletList;
+    tripletList.reserve(size * 9); // Each pixel has up to 9 neighbors
 
     // Define the sharpening filter H_sh2
     constexpr int filter[3][3] = {{0, -3, 0}, {-1, 9, -3}, {0, -1, 0}};
@@ -125,15 +181,14 @@ SparseMatrix<double> createHsh2Matrix(const int height, const int width) {
     // Iterate over every pixel in the image
     for (int i = 0; i < height; ++i) {
         for (int j = 0; j < width; ++j) {
-            int currentIndex = i * width + j;
+            long currentIndex = i * width + j;
 
             // Add weights of neighboring pixels (3x3 window)
             for (int di = -1; di <= 1; ++di) {
                 for (int dj = -1; dj <= 1; ++dj) {
-                    int ni = i + di; // Neighbor row index
-                    int nj = j + dj; // Neighbor column index
-                    if (ni >= 0 && ni < height && nj >= 0 && nj < width) {
-                        int neighborIndex = ni * width + nj;
+                    const int ni = i + di; // Neighbor row index
+                    if (const int nj = j + dj; ni >= 0 && ni < height && nj >= 0 && nj < width) {
+                        long neighborIndex = ni * width + nj;
                         double weight = filter[di + 1][dj + 1]; // Adjust index to filter space
                         tripletList.emplace_back(currentIndex, neighborIndex, weight);
                     }
@@ -144,6 +199,64 @@ SparseMatrix<double> createHsh2Matrix(const int height, const int width) {
 
     // Build the sparse matrix from the triplet list
     S.setFromTriplets(tripletList.begin(), tripletList.end());
+
+    return S;
+}
+
+// Function to create a sparse matrix representing the H_sh2 sharpening kernel using matrix shifts
+SparseMatrix<double> createHsh2MatrixOptimized(int height, int width) {
+    const int size = height * width; // Total number of pixels
+    SparseMatrix<double> S(size, size);
+
+    // Identity matrix to represent the base image (center element in the filter)
+    SparseMatrix<double> I(size, size);
+    I.setIdentity();
+
+    // Define shifts in 8 different directions (up, down, left, right, diagonals)
+    SparseMatrix<double> shiftUp(size, size), shiftDown(size, size);
+    SparseMatrix<double> shiftLeft(size, size), shiftRight(size, size);
+    SparseMatrix<double> shiftUpLeft(size, size), shiftUpRight(size, size);
+    SparseMatrix<double> shiftDownLeft(size, size), shiftDownRight(size, size);
+
+    // Shift by one row (up and down)
+    shiftUp.reserve(size);
+    shiftDown.reserve(size);
+    for (int i = width; i < size; ++i) {
+        shiftUp.insert(i - width, i) = 1.0;
+        shiftDown.insert(i, i - width) = 1.0;
+    }
+
+    // Shift by one column (left and right)
+    shiftLeft.reserve(size);
+    shiftRight.reserve(size);
+    for (int i = 1; i < size; ++i) {
+        if (i % width != 0) {
+            shiftLeft.insert(i, i - 1) = 1.0;
+            shiftRight.insert(i - 1, i) = 1.0;
+        }
+    }
+
+    // Diagonal shifts (up-left, up-right, down-left, down-right)
+    shiftUpLeft.reserve(size);
+    shiftUpRight.reserve(size);
+    shiftDownLeft.reserve(size);
+    shiftDownRight.reserve(size);
+    for (int i = width + 1; i < size; ++i) {
+        if (i % width != 0) {
+            shiftUpLeft.insert(i - width - 1, i) = 1.0;
+            shiftDownRight.insert(i, i - width - 1) = 1.0;
+        }
+        if (i % width != width - 1) {
+            shiftUpRight.insert(i - width + 1, i) = 1.0;
+            shiftDownLeft.insert(i, i - width + 1) = 1.0;
+        }
+    }
+
+    // Apply weights from the sharpening filter H_sh2
+    S = (I * 9.0 // center pixel weight
+         + shiftUp * (-1.0) + shiftDown * (-1.0) + shiftLeft * (-3.0) + shiftRight * (-3.0) +
+         shiftUpLeft * 0.0 // These positions contribute 0, so no operation
+         + shiftUpRight * 0.0 + shiftDownLeft * 0.0 + shiftDownRight * 0.0);
 
     return S;
 }
@@ -161,7 +274,7 @@ int main() {
 
     // Load the image as an Eigen matrix with size m × n.
     int width, height, channels;
-    auto *input_image_path = "/Users/raopend/Workspace/NLA_ch1/photos/180px-Albert_Einstein_Head.jpg";
+    auto *input_image_path = "/Users/raopend/Workspace/NLA_ch1/photos/576px-Albert_Einstein_Head.jpg";
     unsigned char *image_data = stbi_load(input_image_path, &width, &height, &channels, 3); // Force load as grayscale
 
     if (!image_data) {
@@ -281,5 +394,17 @@ int main() {
         return 1;
     }
     logger.log(INFO, "Sharpened image saved to: " + sharpened_image_path);
+
+    /**
+     * Export the Eigen matrix A2 and vector w in the .mtx format.
+     * Using a suitable iterative solver and preconditioner technique available in the LIS library compute the
+     * approximate solution to the linear system A2x = w prescribing a tolerance of 10−9.
+     * Report here the iteration count and the final residual.
+     */
+
+    // Export the Eigen matrix A2 and vector w in the .mtx format
+    saveMarket(A2, "A2.mtx");
+    // Export the vector w in the .mtx format
+    saveMarketVector(w, "w.mtx");
     return 0;
 }
