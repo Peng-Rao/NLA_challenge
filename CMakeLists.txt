@@ -9,8 +9,7 @@ link_directories(extern/lis/lib)
 
 file(
         GLOB_RECURSE mains RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
-        "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/solver.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
 )
 
 find_package(Stb REQUIRED)

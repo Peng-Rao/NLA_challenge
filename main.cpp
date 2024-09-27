@@ -261,6 +261,70 @@ SparseMatrix<double> createHsh2MatrixOptimized(int height, int width) {
     return S;
 }
 
+void exportMatrixMarketExtended(const SparseMatrix<double> &mat, const VectorXd &vec, const std::string &filename) {
+    std::ofstream file(filename);
+
+    // Matrix Market header with additional vector information
+    file << "%%MatrixMarket matrix coordinate real general\n";
+
+    // Write dimensions and non-zero count for the matrix and vector
+    file << mat.rows() << " " << mat.cols() << " " << mat.nonZeros() << " "
+         << "1"
+         << " 0\n";
+
+    // Write the matrix in coordinate format (row, col, value)
+    for (int k = 0; k < mat.outerSize(); ++k) {
+        for (SparseMatrix<double>::InnerIterator it(mat, k); it; ++it) {
+            file << (it.row() + 1) << " " << (it.col() + 1) << " " << it.value() << "\n";
+        }
+    }
+
+    // Write the vector data (row, value)
+    for (int i = 0; i < vec.size(); ++i) {
+        file << (i + 1) << " " << vec(i) << "\n";
+    }
+
+    file.close();
+}
+
+// Function to read a MatrixMarket file, reshape it, and save as an image
+bool saveMatrixMarketToImage(const std::string &inputFilePath, const std::string &outputFilePath, int height,
+                             int width) {
+    VectorXd imgVector(height * width); // 图像向量，长度应该是height * width
+
+    // 打开MatrixMarket文件
+    std::ifstream file(inputFilePath);
+    if (!file) {
+        std::cerr << "无法打开文件: " << inputFilePath << std::endl;
+        return false;
+    }
+
+    std::string line;
+    getline(file, line); // 跳过第一行（%%MatrixMarket头信息）
+    getline(file, line); // 跳过第二行（向量大小信息）
+
+    int index;
+    double real, imag;
+
+    for (int i = 0; i < height * width; ++i) {
+        file >> index >> real >> imag; // 读取行索引、实部、虚部
+        imgVector(i) = real; // 只存储实部
+    }
+
+    file.close();
+
+    // 将向量重新映射为矩阵
+
+    // 保存为图像
+    if (const auto imgMatrix = imgVector.reshaped<RowMajor>(height, width);
+        stbi_write_png(outputFilePath.c_str(), width, height, 1, convertToUnsignedChar(imgMatrix).data(), width) == 0) {
+        std::cerr << "保存图像失败: " << outputFilePath << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
 int main() {
     // Initialize the logger
     Logger logger("log.txt");
@@ -402,9 +466,17 @@ int main() {
      * Report here the iteration count and the final residual.
      */
 
-    // Export the Eigen matrix A2 and vector w in the .mtx format
-    saveMarket(A2, "A2.mtx");
-    // Export the vector w in the .mtx format
-    saveMarketVector(w, "w.mtx");
+    // // Export the Eigen matrix A2 and vector w in the .mtx format
+    // saveMarket(A2, "A2.mtx");
+    // // Export the vector w in the .mtx format
+    // saveMarketVector(w, "w.mtx");
+    exportMatrixMarketExtended(A2, w, "A2_w.mtx");
+
+
+    /**
+     * Import the previous approximate solution vector x in Eigen and then convert it into a .png image.
+     * Upload the resulting file here
+    */
+    saveMatrixMarketToImage("/Users/raopend/Workspace/NLA_ch1/result.mtx", "result.png", height, width);
     return 0;
 }
