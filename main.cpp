@@ -112,7 +112,7 @@ SparseMatrix<double> createAAvg2Matrix(const int height, const int width) {
 }
 
 // Function to create a sparse matrix representing the A_avg 2 smoothing kernel using matrix shifts
-SparseMatrix<double> createAAvg2MatrixOptimized(int height, int width) {
+SparseMatrix<double> createAAvg2MatrixOptimized(const int height, const int width) {
     const int size = height * width;
     SparseMatrix<double> S(size, size);
 
@@ -204,7 +204,7 @@ SparseMatrix<double> createHsh2Matrix(const int height, const int width) {
 }
 
 // Function to create a sparse matrix representing the H_sh2 sharpening kernel using matrix shifts
-SparseMatrix<double> createHsh2MatrixOptimized(int height, int width) {
+SparseMatrix<double> createHsh2MatrixOptimized(const int height, const int width) {
     const int size = height * width; // Total number of pixels
     SparseMatrix<double> S(size, size);
 
@@ -261,6 +261,49 @@ SparseMatrix<double> createHsh2MatrixOptimized(int height, int width) {
     return S;
 }
 
+// Function to create a sparse matrix representing the Laplacian filter (0, -1, 0; -1, 4, -1; 0, -1, 0)
+SparseMatrix<double> createLaplacianMatrixOptimized(const int height, const int width) {
+    const int size = height * width; // Total number of pixels in the image
+    SparseMatrix<double> S(size, size);
+
+    // Identity matrix to represent the base image (center element in the filter)
+    SparseMatrix<double> I(size, size);
+    I.setIdentity();
+
+    // Define shifts in 4 directions (up, down, left, right)
+    SparseMatrix<double> shiftUp(size, size), shiftDown(size, size);
+    SparseMatrix<double> shiftLeft(size, size), shiftRight(size, size);
+
+    // Shift by one row (up and down)
+    shiftUp.reserve(size);
+    shiftDown.reserve(size);
+    for (int i = width; i < size; ++i) {
+        shiftUp.insert(i - width, i) = 1.0;
+        shiftDown.insert(i, i - width) = 1.0;
+    }
+
+    // Shift by one column (left and right)
+    shiftLeft.reserve(size);
+    shiftRight.reserve(size);
+    for (int i = 1; i < size; ++i) {
+        if (i % width != 0) {
+            shiftLeft.insert(i, i - 1) = 1.0;
+            shiftRight.insert(i - 1, i) = 1.0;
+        }
+    }
+
+    // Apply weights from the Laplacian filter
+    S = I * 4.0 // center pixel weight (4)
+        + shiftUp * -1.0 // up
+        + shiftDown * -1.0 // down
+        + shiftLeft * -1.0 // left
+        + shiftRight * -1.0 // right
+            ;
+
+    return S;
+}
+
+// Function to save a sparse matrix in MatrixMarket format
 void exportMatrixMarketExtended(const SparseMatrix<double> &mat, const VectorXd &vec, const std::string &filename) {
     std::ofstream file(filename);
 
@@ -288,8 +331,8 @@ void exportMatrixMarketExtended(const SparseMatrix<double> &mat, const VectorXd 
 }
 
 // Function to read a MatrixMarket file, reshape it, and save as an image
-bool saveMatrixMarketToImage(const std::string &inputFilePath, const std::string &outputFilePath, int height,
-                             int width) {
+bool saveMatrixMarketToImage(const std::string &inputFilePath, const std::string &outputFilePath, const int height,
+                             const int width) {
     VectorXd imgVector(height * width); // 图像向量，长度应该是height * width
 
     // 打开MatrixMarket文件
@@ -476,7 +519,50 @@ int main() {
     /**
      * Import the previous approximate solution vector x in Eigen and then convert it into a .png image.
      * Upload the resulting file here
-    */
+     */
     saveMatrixMarketToImage("/Users/raopend/Workspace/NLA_ch1/result.mtx", "result.png", height, width);
+
+    /**
+     * Write the convolution operation corresponding to the detection kernel Hlab as a matrix vector multiplication
+     * by a matrix A3 having size mn × mn. Is matrix A3 symmetric?
+     */
+    // Define the detection kernel Hlab
+    auto A3 = createLaplacianMatrixOptimized(height, width);
+    logger.log(INFO, "The number of non-zero entries in A3 is: " + std::to_string(A3.nonZeros()));
+    // Report if matrix A3 is symmetric
+    logger.log(INFO, "Matrix A3 is symmetric: " + std::to_string(A3.isApprox(A3.transpose())));
+
+    /**
+     * Apply the previous edge detection filter to the original image by performing the matrix
+     * vector multiplication A3v. Export and upload the resulting image.
+     */
+    // Apply the edge detection filter to the original image
+    auto laplacian_image = A3 * v;
+    // Reshape the edge detection image vector to a matrix
+    auto laplacian_image_matrix = laplacian_image.reshaped<RowMajor>(height, width);
+    // Save the edge detection image using stb_image_write
+    const std::string laplacian_image_path = "output_laplacian.png";
+    if (stbi_write_png(laplacian_image_path.c_str(), width, height, 1,
+                       convertToUnsignedChar(laplacian_image_matrix).data(), width) == 0) {
+        logger.log(ERROR, "Could not save edge detection image");
+        return 1;
+    }
+    logger.log(INFO, "Edge detection image saved to: " + laplacian_image_path);
+
+    /**
+     * Using a suitable iterative solver available in the Eigen library compute the approximate
+     * solutionofthelinearsystem(I+A3)y= w,where I denotes the identity matrix,
+     * prescribing a tolerance of 10−10. Report here the iteration count and the final residual.
+     */
+
+    
+
+    /**
+     * Convert the image stored in the vector y into a .png image and upload it.
+     */
+
+    /**
+     * Comment the obtained results.
+     */
     return 0;
 }
