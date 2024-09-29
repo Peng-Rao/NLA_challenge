@@ -71,6 +71,20 @@ private:
     }
 };
 
+// Function to count only the truly non-zero elements in a sparse matrix
+template<typename T>
+int countNonZeroElements(const SparseMatrix<T> &matrix) {
+    int count = 0;
+    for (int k = 0; k < matrix.outerSize(); ++k) {
+        for (typename SparseMatrix<T>::InnerIterator it(matrix, k); it; ++it) {
+            if (it.value() != 0.0) { // Only count true non-zero elements
+                ++count;
+            }
+        }
+    }
+    return count;
+}
+
 // Utility function to convert and clip values to the range [0, 255]
 Matrix<unsigned char, Dynamic, Dynamic, RowMajor> convertToUnsignedChar(const MatrixXd &matrix) {
     return matrix.unaryExpr([](const double val) -> unsigned char {
@@ -85,7 +99,7 @@ MatrixXd convertToGrayscale(const MatrixXd &red, const MatrixXd &green, const Ma
 
 // Function to create a sparse matrix representing the A_avg 2 smoothing kernel
 SparseMatrix<double> createAAvg2Matrix(const int height, const int width) {
-    const long size = height * width; // 图像的总像素数
+    const long size = height * width;
     SparseMatrix<double> S(size, size);
     std::vector<Triplet<double>> tripletList;
     tripletList.reserve(size * 9); // Each pixel has up to 9 neighbors
@@ -117,7 +131,7 @@ SparseMatrix<double> createAAvg2MatrixOptimized(const int height, const int widt
     const int size = height * width;
     SparseMatrix<double> S(size, size);
 
-    // Identity matrix to represent the base image
+    // Identity matrix to represent the base image (center pixel of the kernel)
     SparseMatrix<double> I(size, size);
     I.setIdentity();
 
@@ -131,15 +145,15 @@ SparseMatrix<double> createAAvg2MatrixOptimized(const int height, const int widt
     shiftUp.reserve(size);
     shiftDown.reserve(size);
     for (int i = width; i < size; ++i) {
-        shiftUp.insert(i - width, i) = 1.0;
-        shiftDown.insert(i, i - width) = 1.0;
+        shiftUp.insert(i, i - width) = 1.0;
+        shiftDown.insert(i - width, i) = 1.0;
     }
 
     // Shift by one column (left and right)
     shiftLeft.reserve(size);
     shiftRight.reserve(size);
     for (int i = 1; i < size; ++i) {
-        if (i % width != 0) {
+        if (i % width != 0) { // avoid crossing row boundaries
             shiftLeft.insert(i, i - 1) = 1.0;
             shiftRight.insert(i - 1, i) = 1.0;
         }
@@ -150,12 +164,12 @@ SparseMatrix<double> createAAvg2MatrixOptimized(const int height, const int widt
     shiftUpRight.reserve(size);
     shiftDownLeft.reserve(size);
     shiftDownRight.reserve(size);
-    for (int i = width + 1; i < size; ++i) {
-        if (i % width != 0) {
+    for (int i = width; i < size; ++i) {
+        if (i % width != 0) { // avoid crossing row boundaries
             shiftUpLeft.insert(i - width - 1, i) = 1.0;
             shiftDownRight.insert(i, i - width - 1) = 1.0;
         }
-        if (i % width != width - 1) {
+        if (i % width != width - 1) { // avoid crossing row boundaries
             shiftUpRight.insert(i - width + 1, i) = 1.0;
             shiftDownLeft.insert(i, i - width + 1) = 1.0;
         }
@@ -164,7 +178,7 @@ SparseMatrix<double> createAAvg2MatrixOptimized(const int height, const int widt
     // Combine all shifted matrices with equal weights (1/9 for average smoothing)
     S = (I + shiftUp + shiftDown + shiftLeft + shiftRight + shiftUpLeft + shiftUpRight + shiftDownLeft +
          shiftDownRight) /
-        9.0;
+        (1.0 / 9.0);
 
     return S;
 }
@@ -216,15 +230,13 @@ SparseMatrix<double> createHsh2MatrixOptimized(const int height, const int width
     // Define shifts in 8 different directions (up, down, left, right, diagonals)
     SparseMatrix<double> shiftUp(size, size), shiftDown(size, size);
     SparseMatrix<double> shiftLeft(size, size), shiftRight(size, size);
-    SparseMatrix<double> shiftUpLeft(size, size), shiftUpRight(size, size);
-    SparseMatrix<double> shiftDownLeft(size, size), shiftDownRight(size, size);
 
     // Shift by one row (up and down)
     shiftUp.reserve(size);
     shiftDown.reserve(size);
     for (int i = width; i < size; ++i) {
-        shiftUp.insert(i - width, i) = 1.0;
-        shiftDown.insert(i, i - width) = 1.0;
+        shiftUp.insert(i, i - width) = 1.0;
+        shiftDown.insert(i - width, i) = 1.0;
     }
 
     // Shift by one column (left and right)
@@ -237,27 +249,10 @@ SparseMatrix<double> createHsh2MatrixOptimized(const int height, const int width
         }
     }
 
-    // Diagonal shifts (up-left, up-right, down-left, down-right)
-    shiftUpLeft.reserve(size);
-    shiftUpRight.reserve(size);
-    shiftDownLeft.reserve(size);
-    shiftDownRight.reserve(size);
-    for (int i = width + 1; i < size; ++i) {
-        if (i % width != 0) {
-            shiftUpLeft.insert(i - width - 1, i) = 1.0;
-            shiftDownRight.insert(i, i - width - 1) = 1.0;
-        }
-        if (i % width != width - 1) {
-            shiftUpRight.insert(i - width + 1, i) = 1.0;
-            shiftDownLeft.insert(i, i - width + 1) = 1.0;
-        }
-    }
 
     // Apply weights from the sharpening filter H_sh2
-    S = (I * 9.0 // center pixel weight
-         + shiftUp * (-1.0) + shiftDown * (-1.0) + shiftLeft * (-3.0) + shiftRight * (-3.0) +
-         shiftUpLeft * 0.0 // These positions contribute 0, so no operation
-         + shiftUpRight * 0.0 + shiftDownLeft * 0.0 + shiftDownRight * 0.0);
+    S = I * 9.0 // center pixel weight
+        + shiftUp * (-1.0) + shiftDown * (-1.0) + shiftLeft * (-3.0) + shiftRight * (-3.0);
 
     return S;
 }
@@ -279,8 +274,8 @@ SparseMatrix<double> createLaplacianMatrixOptimized(const int height, const int 
     shiftUp.reserve(size);
     shiftDown.reserve(size);
     for (int i = width; i < size; ++i) {
-        shiftUp.insert(i - width, i) = 1.0;
-        shiftDown.insert(i, i - width) = 1.0;
+        shiftUp.insert(i, i - width) = 1.0;
+        shiftDown.insert(i - width, i) = 1.0;
     }
 
     // Shift by one column (left and right)
@@ -461,7 +456,7 @@ int main(int argc, char *argv[]) {
     // Define the smoothing kernel Hav2
     // Define the matrix A1
     auto A1 = createAAvg2Matrix(height, width);
-    logger.log(INFO, "The number of non-zero entries in A1 is: " + std::to_string(A1.nonZeros()));
+    logger.log(INFO, "The number of non-zero entries in A1 is: " + std::to_string(countNonZeroElements(A1)));
 
     /**
      * Apply the previous smoothing filter to the noisy image by performing the matrix vector multiplication A1w.
@@ -486,8 +481,8 @@ int main(int argc, char *argv[]) {
      * as a matrix vector multiplication by a matrix A2 having size mn × mn. Report the number of non-zero
      * entries in A2. Is A2 symmetric?
      */
-    auto A2 = createHsh2Matrix(height, width);
-    logger.log(INFO, "The number of non-zero entries in A2 is: " + std::to_string(A2.nonZeros()));
+    auto A2 = createHsh2MatrixOptimized(height, width);
+    logger.log(INFO, "The number of non-zero entries in A2 is: " + std::to_string(countNonZeroElements(A2)));
     // Report if matrix A2 is symmetric
     logger.log(INFO, "Matrix A2 is symmetric: " + std::to_string(A2.isApprox(A2.transpose())));
 
@@ -577,7 +572,7 @@ int main(int argc, char *argv[]) {
      */
     // Define the detection kernel Hlab
     auto A3 = createLaplacianMatrixOptimized(height, width);
-    logger.log(INFO, "The number of non-zero entries in A3 is: " + std::to_string(A3.nonZeros()));
+    logger.log(INFO, "The number of non-zero entries in A3 is: " + std::to_string(countNonZeroElements(A3)));
     // Report if matrix A3 is symmetric
     logger.log(INFO, "Matrix A3 is symmetric: " + std::to_string(A3.isApprox(A3.transpose())));
 
