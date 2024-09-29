@@ -9,6 +9,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "lis.h"
 #include "stb_image_write.h"
 
 using namespace Eigen;
@@ -368,11 +369,9 @@ bool saveMatrixMarketToImage(const std::string &inputFilePath, const std::string
     return true;
 }
 
-int main() {
+int main(int argc, char *argv[]) {
     // Initialize the logger
     Logger logger("log.txt");
-
-
     /**
      * Load the image as an Eigen matrix with size m × n.
      * Each entry in the matrix corresponds to a pixel on the screen and takes a value somewhere between 0 (black) and
@@ -508,19 +507,58 @@ int main() {
      * approximate solution to the linear system A2x = w prescribing a tolerance of 10−9.
      * Report here the iteration count and the final residual.
      */
-
-    // // Export the Eigen matrix A2 and vector w in the .mtx format
-    // saveMarket(A2, "A2.mtx");
-    // // Export the vector w in the .mtx format
-    // saveMarketVector(w, "w.mtx");
     exportMatrixMarketExtended(A2, w, "A2_w.mtx");
 
+
+    LIS_MATRIX A;
+    LIS_VECTOR x, b;
+    LIS_SOLVER solver;
+    LIS_INT iter;
+    LIS_REAL resid;
+    double time;
+    std::string solver_name = "bicg";
+    std::string precon_name = "none";
+    auto tol = 1.0e-9;
+
+    LIS_DEBUG_FUNC_IN;
+
+    lis_initialize(&argc, &argv);
+
+    lis_matrix_create(LIS_COMM_WORLD, &A);
+    lis_vector_create(LIS_COMM_WORLD, &b);
+    lis_vector_create(LIS_COMM_WORLD, &x);
+    lis_solver_create(&solver);
+    lis_solver_set_option(const_cast<char *>(std::format("-i {} -p", solver_name, precon_name).c_str()), solver);
+    lis_solver_set_option(const_cast<char *>(std::format("-tol {}", tol).c_str()), solver);
+    lis_matrix_set_type(A, LIS_MATRIX_CSR);
+
+    const auto input_file = "A2_w.mtx";
+
+    lis_input(A, b, x, const_cast<char *>(input_file));
+    lis_vector_duplicate(A, &x);
+    lis_solve(A, b, x, solver);
+
+    lis_solver_get_iter(solver, &iter);
+    lis_solver_get_time(solver, &time);
+    printf("number of iterations = %d\n", iter);
+    printf("elapsed time = %e\n", time);
+
+    lis_solver_get_residualnorm(solver, &resid);
+    printf("residual = %e\n", resid);
+
+    const auto output_file = "A2_w_result.mtx";
+    lis_output_vector(x, LIS_FMT_MM, const_cast<char *>(output_file));
+    -lis_solver_destroy(solver);
+    lis_matrix_destroy(A);
+    lis_vector_destroy(b);
+    lis_vector_destroy(x);
+    lis_finalize();
 
     /**
      * Import the previous approximate solution vector x in Eigen and then convert it into a .png image.
      * Upload the resulting file here
      */
-    saveMatrixMarketToImage("/Users/raopend/Workspace/NLA_ch1/result.mtx", "result.png", height, width);
+    saveMatrixMarketToImage("A2_w_result.mtx", "A2_w_result.png", height, width);
 
     /**
      * Write the convolution operation corresponding to the detection kernel Hlab as a matrix vector multiplication
@@ -554,12 +592,42 @@ int main() {
      * solutionofthelinearsystem(I+A3)y= w,where I denotes the identity matrix,
      * prescribing a tolerance of 10−10. Report here the iteration count and the final residual.
      */
+    // Define the identity matrix
+    SparseMatrix<double> I(height * width, height * width);
+    I.setIdentity();
+    // Define the matrix A3
+    auto A3_I = I + A3;
+    // Define the iterative solver
+    ConjugateGradient<SparseMatrix<double>, Lower | Upper> cg;
+    // Set the tolerance
+    cg.setTolerance(1.0e-10);
+    // Solve the linear system
+    cg.compute(A3_I);
+    // Check the status of the solver
+    if (cg.info() != Success) {
+        logger.log(ERROR, "Eigen CG solver failed to converge");
+    } else {
+        logger.log(INFO, "Eigen CG solver converged successfully");
+    }
 
-    
+    VectorXd y = cg.solve(w);
+
+    // Report the iteration count and the final residual
+    logger.log(INFO,
+               "The number of iterations for the linear system (I + A3)y = w is: " + std::to_string(cg.iterations()));
 
     /**
      * Convert the image stored in the vector y into a .png image and upload it.
      */
+    // Reshape the edge detection image vector to a matrix
+    auto y_matrix = y.reshaped<RowMajor>(height, width);
+    // Save the edge detection image using stb_image_write
+    const std::string y_image_path = "output_y.png";
+    if (stbi_write_png(y_image_path.c_str(), width, height, 1, convertToUnsignedChar(y_matrix).data(), width) == 0) {
+        logger.log(ERROR, "Could not save y image");
+        return 1;
+    }
+    logger.log(INFO, "y image saved to: " + y_image_path);
 
     /**
      * Comment the obtained results.
