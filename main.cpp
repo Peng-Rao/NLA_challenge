@@ -380,7 +380,7 @@ int main(int argc, char *argv[]) {
 
     // Load the image as an Eigen matrix with size m × n.
     int width, height, channels;
-    auto *input_image_path = "/Users/raopend/Workspace/NLA_ch1/photos/576px-Albert_Einstein_Head.jpg";
+    auto *input_image_path = "/Users/raopend/Workspace/NLA_ch1/photos/256px-Albert_Einstein_Head.jpg";
     unsigned char *image_data = stbi_load(input_image_path, &width, &height, &channels, 3); // Force load as grayscale
 
     if (!image_data) {
@@ -412,6 +412,8 @@ int main(int argc, char *argv[]) {
     // Report the size of the matrix
     logger.log(INFO,
                "The size of the original image matrix is: " + std::to_string(height) + " x " + std::to_string(width));
+
+
     /**
      *Introduce a noise signal into the loaded image by adding random fluctuations of color
      *ranging between [−50, 50] to each pixel. Export the resulting image in .png and upload it.
@@ -448,8 +450,6 @@ int main(int argc, char *argv[]) {
 
     // Report here the Euclidean norm of \vec{v}
     logger.log(INFO, "The Euclidean norm of v is: " + std::to_string(v.norm()));
-    // Report here the Euclidean norm of \vec{w}
-    logger.log(INFO, "The Euclidean norm of w is: " + std::to_string(w.norm()));
 
 
     /**
@@ -488,6 +488,15 @@ int main(int argc, char *argv[]) {
      */
     auto A2 = createHsh2Matrix(height, width);
     logger.log(INFO, "The number of non-zero entries in A2 is: " + std::to_string(A2.nonZeros()));
+    // Report if matrix A2 is symmetric
+    logger.log(INFO, "Matrix A2 is symmetric: " + std::to_string(A2.isApprox(A2.transpose())));
+
+
+    /**
+     * Apply the previous sharpening filter to the original image by performing the matrix vector multiplication A2v.
+     * Export and upload the resulting image.
+     */
+
     // apply the sharpening filter to the original image
     auto sharpened_image = A2 * v;
     // Reshape the sharpened image vector to a matrix
@@ -528,7 +537,7 @@ int main(int argc, char *argv[]) {
     lis_vector_create(LIS_COMM_WORLD, &b);
     lis_vector_create(LIS_COMM_WORLD, &x);
     lis_solver_create(&solver);
-    lis_solver_set_option(const_cast<char *>(std::format("-i {} -p", solver_name, precon_name).c_str()), solver);
+    lis_solver_set_option(const_cast<char *>(std::format("-i {} -p {}", solver_name, precon_name).c_str()), solver);
     lis_solver_set_option(const_cast<char *>(std::format("-tol {}", tol).c_str()), solver);
     lis_matrix_set_type(A, LIS_MATRIX_CSR);
 
@@ -540,11 +549,13 @@ int main(int argc, char *argv[]) {
 
     lis_solver_get_iter(solver, &iter);
     lis_solver_get_time(solver, &time);
-    printf("number of iterations = %d\n", iter);
-    printf("elapsed time = %e\n", time);
-
     lis_solver_get_residualnorm(solver, &resid);
-    printf("residual = %e\n", resid);
+
+    // log the results
+    logger.log(INFO, "The solver used for the linear system A2x = w is: " + solver_name);
+    logger.log(INFO, "The number of iterations for the linear system A2x = w is: " + std::to_string(iter));
+    logger.log(INFO, "The final residual for the linear system A2x = w is: " + std::format("{}", resid));
+    logger.log(INFO, "The elapsed time for the linear system A2x = w is: " + std::to_string(time));
 
     const auto output_file = "A2_w_result.mtx";
     lis_output_vector(x, LIS_FMT_MM, const_cast<char *>(output_file));
@@ -613,8 +624,13 @@ int main(int argc, char *argv[]) {
     VectorXd y = cg.solve(w);
 
     // Report the iteration count and the final residual
+    // the solver used for the linear system (I + A3)y = w
+    logger.log(INFO, "The solver used for the linear system (I + A3)y = w is: Eigen CG");
+    // the number of iterations for the linear system (I + A3)y = w
     logger.log(INFO,
                "The number of iterations for the linear system (I + A3)y = w is: " + std::to_string(cg.iterations()));
+    // the final residual for the linear system (I + A3)y = w
+    logger.log(INFO, "The final residual for the linear system (I + A3)y = w is: " + std::format("{}", cg.error()));
 
     /**
      * Convert the image stored in the vector y into a .png image and upload it.
