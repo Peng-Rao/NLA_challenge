@@ -329,9 +329,9 @@ void exportMatrixMarketExtended(const SparseMatrix<double> &mat, const VectorXd 
 // Function to read a MatrixMarket file, reshape it, and save as an image
 bool saveMatrixMarketToImage(const std::string &inputFilePath, const std::string &outputFilePath, const int height,
                              const int width) {
-    VectorXd imgVector(height * width); // 图像向量，长度应该是height * width
+    VectorXd imgVector(height * width);
 
-    // 打开MatrixMarket文件
+    // Read the MatrixMarket file
     std::ifstream file(inputFilePath);
     if (!file) {
         std::cerr << "无法打开文件: " << inputFilePath << std::endl;
@@ -339,22 +339,19 @@ bool saveMatrixMarketToImage(const std::string &inputFilePath, const std::string
     }
 
     std::string line;
-    getline(file, line); // 跳过第一行（%%MatrixMarket头信息）
-    getline(file, line); // 跳过第二行（向量大小信息）
+    getline(file, line); // skip the first line
+    getline(file, line); // skip the second line
 
     int index;
     double real, imag;
 
     for (int i = 0; i < height * width; ++i) {
-        file >> index >> real >> imag; // 读取行索引、实部、虚部
-        imgVector(i) = real; // 只存储实部
+        file >> index >> real >> imag;
+        imgVector(i) = real;
     }
 
     file.close();
 
-    // 将向量重新映射为矩阵
-
-    // 保存为图像
     if (const auto imgMatrix = imgVector.reshaped<RowMajor>(height, width);
         stbi_write_png(outputFilePath.c_str(), width, height, 1, convertToUnsignedChar(imgMatrix).data(), width) == 0) {
         std::cerr << "保存图像失败: " << outputFilePath << std::endl;
@@ -522,7 +519,7 @@ int main(int argc, char *argv[]) {
     auto tol = 1.0e-9;
 
     // List of solvers to try
-    std::vector<std::string> solvers = {"cg", "bicg", "jacobi", "gs"};
+    std::vector<std::string> solvers = {"cg", "bicg", "jacobi", "gs", "bicgstab"};
 
     LIS_DEBUG_FUNC_IN;
 
@@ -687,11 +684,20 @@ int main(int argc, char *argv[]) {
             logger.log(ERROR, "Could not save image for solver: " + solver_name);
             continue;
         }
-        logger.log(INFO, "Image saved for solver: " + solver_name + " to " + y_image_path);
+        logger.log(INFO,
+                   std::string("Image saved for solver: ").append(solver_name).append(" to ").append(y_image_path));
     }
 
     /**
      * Comment the obtained results.
+     */
+
+    /*
+    Compared to direct methods (LU factorization), the Jacobi method, and the Gauss-Seidel method, the improved BiCG and
+    BiCGSTAB algorithms for the Conjugate Gradient Method have shown good performance in solving this large sparse
+    matrix. Both methods reduced the residual to very small values, indicating good convergence. Overall, the BiCGSTAB
+    algorithm converged the fastest compared to BiCG, though its accuracy was slightly lower. All iterative methods were
+    able to converge, whereas the direct method was unsuitable for this system (no solution).
      */
     return 0;
 }
