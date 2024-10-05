@@ -481,7 +481,7 @@ int main(int argc, char *argv[]) {
      * as a matrix vector multiplication by a matrix A2 having size mn × mn. Report the number of non-zero
      * entries in A2. Is A2 symmetric?
      */
-    auto A2 = createHsh2MatrixOptimized(height, width);
+    auto A2 = createHsh2Matrix(height, width);
     logger.log(INFO, "The number of non-zero entries in A2 is: " + std::to_string(countNonZeroElements(A2)));
     // Report if matrix A2 is symmetric
     logger.log(INFO, "Matrix A2 is symmetric: " + std::to_string(A2.isApprox(A2.transpose())));
@@ -513,58 +513,72 @@ int main(int argc, char *argv[]) {
      */
     exportMatrixMarketExtended(A2, w, "A2_w.mtx");
 
-
     LIS_MATRIX A;
     LIS_VECTOR x, b;
     LIS_SOLVER solver;
     LIS_INT iter;
     LIS_REAL resid;
     double time;
-    std::string solver_name = "bicg";
-    std::string precon_name = "none";
     auto tol = 1.0e-9;
+
+    // List of solvers to try
+    std::vector<std::string> solvers = {"cg", "bicg", "jacobi", "gs"};
 
     LIS_DEBUG_FUNC_IN;
 
     lis_initialize(&argc, &argv);
 
+    // Matrix and vectors setup
     lis_matrix_create(LIS_COMM_WORLD, &A);
     lis_vector_create(LIS_COMM_WORLD, &b);
     lis_vector_create(LIS_COMM_WORLD, &x);
-    lis_solver_create(&solver);
-    lis_solver_set_option(const_cast<char *>(std::format("-i {} -p {}", solver_name, precon_name).c_str()), solver);
-    lis_solver_set_option(const_cast<char *>(std::format("-tol {}", tol).c_str()), solver);
     lis_matrix_set_type(A, LIS_MATRIX_CSR);
 
-    const auto input_file = "A2_w.mtx";
-
-    lis_input(A, b, x, const_cast<char *>(input_file));
+    const std::string input_file = "A2_w.mtx";
+    lis_input(A, b, x, const_cast<char *>(input_file.c_str()));
     lis_vector_duplicate(A, &x);
-    lis_solve(A, b, x, solver);
 
-    lis_solver_get_iter(solver, &iter);
-    lis_solver_get_time(solver, &time);
-    lis_solver_get_residualnorm(solver, &resid);
+    for (const auto &solver_name: solvers) {
+        lis_solver_create(&solver);
+        // Set solver options dynamically based on the current solver_name
+        std::string solver_option = std::format("-i {} -p none -tol {}", solver_name, tol);
+        lis_solver_set_option(const_cast<char *>(solver_option.c_str()), solver);
 
-    // log the results
-    logger.log(INFO, "The solver used for the linear system A2x = w is: " + solver_name);
-    logger.log(INFO, "The number of iterations for the linear system A2x = w is: " + std::to_string(iter));
-    logger.log(INFO, "The final residual for the linear system A2x = w is: " + std::format("{}", resid));
-    logger.log(INFO, "The elapsed time for the linear system A2x = w is: " + std::to_string(time));
+        // Solve the system
+        lis_solve(A, b, x, solver);
 
-    const auto output_file = "A2_w_result.mtx";
-    lis_output_vector(x, LIS_FMT_MM, const_cast<char *>(output_file));
-    -lis_solver_destroy(solver);
+        // Get and log results
+        lis_solver_get_iter(solver, &iter);
+        lis_solver_get_time(solver, &time);
+        lis_solver_get_residualnorm(solver, &resid);
+
+        // Log details
+        logger.log(INFO, "Solver: " + solver_name);
+        logger.log(INFO, "Iterations: " + std::to_string(iter));
+        logger.log(INFO, "Residual: " + std::format("{}", resid));
+        logger.log(INFO, "Elapsed time: " + std::to_string(time) + " seconds");
+
+        // Output results to .mtx and .png
+        std::string output_file_mtx = solver_name + "_result.mtx";
+        std::string output_file_png = solver_name + "_result.png";
+        lis_output_vector(x, LIS_FMT_MM, const_cast<char *>(output_file_mtx.c_str()));
+
+        /**
+         * Import the previous approximate solution vector x in Eigen and then convert it into a .png image.
+         * Upload the resulting file here
+         */
+        saveMatrixMarketToImage(output_file_mtx, output_file_png, height, width);
+
+        // Clean up solver
+        lis_solver_destroy(solver);
+    }
+
+    // Cleanup matrix and vectors
     lis_matrix_destroy(A);
     lis_vector_destroy(b);
     lis_vector_destroy(x);
-    lis_finalize();
 
-    /**
-     * Import the previous approximate solution vector x in Eigen and then convert it into a .png image.
-     * Upload the resulting file here
-     */
-    saveMatrixMarketToImage("A2_w_result.mtx", "A2_w_result.png", height, width);
+    lis_finalize();
 
     /**
      * Write the convolution operation corresponding to the detection kernel Hlab as a matrix vector multiplication
@@ -603,42 +617,78 @@ int main(int argc, char *argv[]) {
     I.setIdentity();
     // Define the matrix A3
     auto A3_I = I + A3;
-    // Define the iterative solver
-    ConjugateGradient<SparseMatrix<double>, Lower | Upper> cg;
-    // Set the tolerance
-    cg.setTolerance(1.0e-10);
-    // Solve the linear system
-    cg.compute(A3_I);
-    // Check the status of the solver
-    if (cg.info() != Success) {
-        logger.log(ERROR, "Eigen CG solver failed to converge");
-    } else {
-        logger.log(INFO, "Eigen CG solver converged successfully");
+    // List of solver names and corresponding solver objects
+    for (std::vector<std::string> solver_names = {"ConjugateGradient", "BiCGSTAB", "SparseLU"};
+         const auto &solver_name: solver_names) {
+        VectorXd y;
+
+        if (solver_name == "ConjugateGradient") {
+            // Conjugate Gradient solver
+            ConjugateGradient<SparseMatrix<double>, Lower | Upper> cg;
+            cg.setTolerance(1.0e-10);
+            cg.compute(A3_I);
+
+            if (cg.info() != Eigen::Success) {
+                logger.log(ERROR, solver_name + " solver failed to converge");
+                continue;
+            }
+            y = cg.solve(w);
+
+            // Logging iteration count and residual
+            logger.log(INFO, "Solver: " + solver_name);
+            logger.log(INFO, "Iterations: " + std::to_string(cg.iterations()));
+            logger.log(INFO, "Final residual: " + std::format("{}", cg.error()));
+
+        } else if (solver_name == "BiCGSTAB") {
+            // BiCGSTAB solver
+            BiCGSTAB<SparseMatrix<double>> bicgstab;
+            bicgstab.setTolerance(1.0e-10);
+            bicgstab.compute(A3_I);
+
+            if (bicgstab.info() != Success) {
+                logger.log(ERROR, solver_name + " solver failed to converge");
+                continue;
+            }
+            y = bicgstab.solve(w);
+
+            // Logging iteration count and residual
+            logger.log(INFO, "Solver: " + solver_name);
+            logger.log(INFO, "Iterations: " + std::to_string(bicgstab.iterations()));
+            logger.log(INFO, "Final residual: " + std::format("{}", bicgstab.error()));
+
+        } else if (solver_name == "SparseLU") {
+            // SparseLU solver
+            SparseLU<SparseMatrix<double>> sparse_lu;
+            sparse_lu.compute(A3_I);
+
+            if (sparse_lu.info() != Success) {
+                logger.log(ERROR, solver_name + " solver failed to converge");
+                continue;
+            }
+            y = sparse_lu.solve(w);
+
+            // the final residual for the linear system (I + A3)y = w
+            // Logging iteration count and residual (SparseLU doesn't iterate)
+            logger.log(INFO, "Solver: " + solver_name);
+            logger.log(INFO, "Iterations: 1 (direct solver)");
+            logger.log(INFO, "Final residual: n/a (direct solver)");
+        }
+
+        // Reshape the solution vector to a matrix
+        auto y_matrix = y.reshaped<RowMajor>(height, width);
+
+        /**
+         * Convert the image stored in the vector y into a .png image and upload it.
+         */
+        // Save the resulting image as a PNG file using stb_image_write
+        const std::string y_image_path = solver_name + "_y.png";
+        if (stbi_write_png(y_image_path.c_str(), width, height, 1, convertToUnsignedChar(y_matrix).data(), width) ==
+            0) {
+            logger.log(ERROR, "Could not save image for solver: " + solver_name);
+            continue;
+        }
+        logger.log(INFO, "Image saved for solver: " + solver_name + " to " + y_image_path);
     }
-
-    VectorXd y = cg.solve(w);
-
-    // Report the iteration count and the final residual
-    // the solver used for the linear system (I + A3)y = w
-    logger.log(INFO, "The solver used for the linear system (I + A3)y = w is: Eigen CG");
-    // the number of iterations for the linear system (I + A3)y = w
-    logger.log(INFO,
-               "The number of iterations for the linear system (I + A3)y = w is: " + std::to_string(cg.iterations()));
-    // the final residual for the linear system (I + A3)y = w
-    logger.log(INFO, "The final residual for the linear system (I + A3)y = w is: " + std::format("{}", cg.error()));
-
-    /**
-     * Convert the image stored in the vector y into a .png image and upload it.
-     */
-    // Reshape the edge detection image vector to a matrix
-    auto y_matrix = y.reshaped<RowMajor>(height, width);
-    // Save the edge detection image using stb_image_write
-    const std::string y_image_path = "output_y.png";
-    if (stbi_write_png(y_image_path.c_str(), width, height, 1, convertToUnsignedChar(y_matrix).data(), width) == 0) {
-        logger.log(ERROR, "Could not save y image");
-        return 1;
-    }
-    logger.log(INFO, "y image saved to: " + y_image_path);
 
     /**
      * Comment the obtained results.

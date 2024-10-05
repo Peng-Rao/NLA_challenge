@@ -1,6 +1,6 @@
 {
-  "dependencies": [
-    "stb",
-    "eigen3"
-  ]
+  "dependencies" : [ "stb", "eigen3", {
+    "name" : "mpi",
+    "version>=" : "1#4"
+  } ]
 }
