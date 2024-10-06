@@ -697,7 +697,13 @@ int main(int argc, char *argv[]) {
     BiCGSTAB algorithms for the Conjugate Gradient Method have shown good performance in solving this large sparse
     matrix. Both methods reduced the residual to very small values, indicating good convergence. Overall, the BiCGSTAB
     algorithm converged the fastest compared to BiCG, though its accuracy was slightly lower. All iterative methods were
-    able to converge, whereas the direct method was unsuitable for this system (no solution).
+    able to converge, whereas the direct method was unsuitable for this system (no solution). In regard to the images
+    obtained from the various filtering operations, it was observed that the first and last pixels of each row and
+    column did not conform to what we initially expected. This is due to the fact that the neighbouring pixels are not
+    available at the boundaries; therefore, zero padding is employed to extend the image, thus enabling the application
+    of the kernel to the edge pixels. The presence of these zeros has an impact on the convolution calculation,
+    resulting in the aforementioned effect. This can be mitigated by modifying the type of padding employed, for example
+    extending the value of the image edge or using the wrap technique.
      */
     return 0;
 }
