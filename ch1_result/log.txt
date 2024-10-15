@@ -1,0 +1,47 @@
+[2024-10-15 12:36:48] INFO: The size of the original image matrix is: 341 x 256
+[2024-10-15 12:36:48] INFO: Noisy image saved to: ./ch1_result/output_noisy.png
+[2024-10-15 12:36:48] INFO: The Euclidean norm of v is: 35497.163746
+[2024-10-15 12:36:48] INFO: The number of non-zero entries in A1 is: 782086
+[2024-10-15 12:36:49] INFO: Smoothed image saved to: ./ch1_result/output_smoothed.png
+[2024-10-15 12:36:49] INFO: The number of non-zero entries in A2 is: 435286
+[2024-10-15 12:36:49] INFO: Matrix A2 is symmetric: 0
+[2024-10-15 12:36:49] INFO: Sharpened image saved to: ./ch1_result/output_sharpened.png
+[2024-10-15 12:36:54] INFO: Solver: cg
+[2024-10-15 12:36:54] INFO: Iterations: 1001
+[2024-10-15 12:36:54] INFO: Residual: 197.9200682412025
+[2024-10-15 12:36:54] INFO: Elapsed time: 4.341284 seconds
+[2024-10-15 12:36:54] INFO: Solver: bicg
+[2024-10-15 12:36:54] INFO: Iterations: 29
+[2024-10-15 12:36:54] INFO: Residual: 7.903487135350312e-10
+[2024-10-15 12:36:54] INFO: Elapsed time: 0.251422 seconds
+[2024-10-15 12:36:59] INFO: Solver: jacobi
+[2024-10-15 12:36:59] INFO: Iterations: 1001
+[2024-10-15 12:36:59] INFO: Residual: 9.292460559185734e-07
+[2024-10-15 12:36:59] INFO: Elapsed time: 4.142020 seconds
+[2024-10-15 12:36:59] INFO: Solver: gs
+[2024-10-15 12:36:59] INFO: Iterations: 34
+[2024-10-15 12:36:59] INFO: Residual: 8.100816251849505e-10
+[2024-10-15 12:36:59] INFO: Elapsed time: 0.176166 seconds
+[2024-10-15 12:36:59] INFO: Solver: bicgstab
+[2024-10-15 12:36:59] INFO: Iterations: 15
+[2024-10-15 12:36:59] INFO: Residual: 3.1783562251875146e-10
+[2024-10-15 12:36:59] INFO: Elapsed time: 0.131572 seconds
+[2024-10-15 12:37:00] INFO: Solver: gmres
+[2024-10-15 12:37:00] INFO: Iterations: 27
+[2024-10-15 12:37:00] INFO: Residual: 5.929124607287312e-10
+[2024-10-15 12:37:00] INFO: Elapsed time: 0.207905 seconds
+[2024-10-15 12:37:00] INFO: The number of non-zero entries in A3 is: 435286
+[2024-10-15 12:37:00] INFO: Matrix A3 is symmetric: 1
+[2024-10-15 12:37:00] INFO: Edge detection image saved to: ./ch1_result/output_laplacian.png
+[2024-10-15 12:37:01] INFO: Solver: ConjugateGradient
+[2024-10-15 12:37:01] INFO: Iterations: 32
+[2024-10-15 12:37:01] INFO: Final residual: 7.54012072370876e-11
+[2024-10-15 12:37:01] INFO: Image saved for solver: ConjugateGradient to ./ch1_result/ConjugateGradient_y.png
+[2024-10-15 12:37:02] INFO: Solver: BiCGSTAB
+[2024-10-15 12:37:02] INFO: Iterations: 23
+[2024-10-15 12:37:02] INFO: Final residual: 7.219492513089352e-11
+[2024-10-15 12:37:02] INFO: Image saved for solver: BiCGSTAB to ./ch1_result/BiCGSTAB_y.png
+[2024-10-15 12:37:19] INFO: Solver: SparseLU
+[2024-10-15 12:37:19] INFO: Iterations: 1 (direct solver)
+[2024-10-15 12:37:19] INFO: Final residual: n/a (direct solver)
+[2024-10-15 12:37:19] INFO: Image saved for solver: SparseLU to ./ch1_result/SparseLU_y.png

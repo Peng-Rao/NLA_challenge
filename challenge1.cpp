@@ -363,7 +363,7 @@ bool saveMatrixMarketToImage(const std::string &inputFilePath, const std::string
 
 int main(int argc, char *argv[]) {
     // Initialize the logger
-    Logger logger("log.txt");
+    Logger logger("./ch1_result/log.txt");
     /**
      * Load the image as an Eigen matrix with size m × n.
      * Each entry in the matrix corresponds to a pixel on the screen and takes a value somewhere between 0 (black) and
@@ -519,7 +519,7 @@ int main(int argc, char *argv[]) {
     auto tol = 1.0e-9;
 
     // List of solvers to try
-    std::vector<std::string> solvers = {"cg", "bicg", "jacobi", "gs", "bicgstab"};
+    std::vector<std::string> solvers = {"cg", "bicg", "jacobi", "gs", "bicgstab", "gmres"};
 
     LIS_DEBUG_FUNC_IN;
 
@@ -531,14 +531,14 @@ int main(int argc, char *argv[]) {
     lis_vector_create(LIS_COMM_WORLD, &x);
     lis_matrix_set_type(A, LIS_MATRIX_CSR);
 
-    const std::string input_file = "A2_w.mtx";
+    const std::string input_file = "./ch1_result/A2_w.mtx";
     lis_input(A, b, x, const_cast<char *>(input_file.c_str()));
     lis_vector_duplicate(A, &x);
 
     for (const auto &solver_name: solvers) {
         lis_solver_create(&solver);
         // Set solver options dynamically based on the current solver_name
-        std::string solver_option = std::format("-i {} -p none -tol {}", solver_name, tol);
+        std::string solver_option = std::format("-i {} -p ssor -tol {}", solver_name, tol);
         lis_solver_set_option(const_cast<char *>(solver_option.c_str()), solver);
 
         // Solve the system

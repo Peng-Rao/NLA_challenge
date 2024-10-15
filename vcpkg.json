@@ -1,10 +1,5 @@
 {
   "dependencies": [
-    "eigen3",
-    {
-      "name": "mpi",
-      "version>=": "1#4"
-    },
     "stb",
     "fmt"
   ]
