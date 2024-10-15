@@ -1,6 +1,7 @@
 {
   "dependencies": [
     "stb",
-    "fmt"
+    "fmt",
+    "plog"
   ]
 }

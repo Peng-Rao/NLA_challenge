@@ -1,75 +1,24 @@
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+
+
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
-#include <ctime>
-#include <fstream>
-#include <iostream>
-#include <sstream>
 #include <unsupported/Eigen/SparseExtra>
 
-#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "lis.h"
 #include "stb_image_write.h"
+
+#include "lis.h"
+
+#include <plog/Initializers/RollingFileInitializer.h>
+#include <plog/Log.h>
+
+#include <ctime>
+#include <iostream>
 
 using namespace Eigen;
 
-enum LogLevel { DEBUG, INFO, WARNING, ERROR };
-
-class Logger {
-public:
-    // Constructor: Opens the log file in append mode
-    explicit Logger(const std::string &filename) {
-        logFile.open(filename, std::ios::app);
-        if (!logFile.is_open()) {
-            std::cerr << "Error opening log file." << std::endl;
-        }
-    }
-
-    // Destructor: Closes the log file
-    ~Logger() { logFile.close(); }
-
-    // Logs a message with a given log level
-    void log(LogLevel level, const std::string &message) {
-        // Get current timestamp
-        const time_t now = time(nullptr);
-        const tm *timeinfo = localtime(&now);
-        char timestamp[20];
-        strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", timeinfo);
-
-        // Create log entry
-        std::ostringstream logEntry;
-        logEntry << "[" << timestamp << "] " << levelToString(level) << ": " << message << std::endl;
-
-        // Output to console
-        std::cout << logEntry.str();
-
-        // Output to log file
-        if (logFile.is_open()) {
-            logFile << logEntry.str();
-            logFile.flush(); // Ensure immediate write to file
-        }
-    }
-
-private:
-    std::ofstream logFile; // File stream for the log file
-
-    // Converts log level to a string for output
-    static std::string levelToString(LogLevel level) {
-        switch (level) {
-            case DEBUG:
-                return "DEBUG";
-            case INFO:
-                return "INFO";
-            case WARNING:
-                return "WARNING";
-            case ERROR:
-                return "ERROR";
-            default:
-                return "UNKNOWN";
-        }
-    }
-};
 
 // Function to count only the truly non-zero elements in a sparse matrix
 template<typename T>
@@ -363,7 +312,7 @@ bool saveMatrixMarketToImage(const std::string &inputFilePath, const std::string
 
 int main(int argc, char *argv[]) {
     // Initialize the logger
-    Logger logger("./ch1_result/log.txt");
+    plog::init(plog::debug, "./ch1_result/log.txt");
     /**
      * Load the image as an Eigen matrix with size m × n.
      * Each entry in the matrix corresponds to a pixel on the screen and takes a value somewhere between 0 (black) and
@@ -376,7 +325,7 @@ int main(int argc, char *argv[]) {
     unsigned char *image_data = stbi_load(input_image_path, &width, &height, &channels, 3); // Force load as grayscale
 
     if (!image_data) {
-        logger.log(ERROR, "Could not load image");
+        LOG_ERROR << "Could not load image";
         return 1;
     }
     // Prepare Eigen matrices for each RGB channel
@@ -402,8 +351,7 @@ int main(int argc, char *argv[]) {
             gray.unaryExpr([](const double val) -> unsigned char { return static_cast<unsigned char>(val * 255.0); });
 
     // Report the size of the matrix
-    logger.log(INFO,
-               "The size of the original image matrix is: " + std::to_string(height) + " x " + std::to_string(width));
+    PLOG_INFO << "The size of the original image matrix is: " + std::to_string(height) + " x " + std::to_string(width);
 
 
     /**
@@ -420,10 +368,10 @@ int main(int argc, char *argv[]) {
     const std::string output_image_path = "./ch1_result/output_noisy.png";
     if (stbi_write_png(output_image_path.c_str(), width, height, 1, convertToUnsignedChar(noisy_image_matrix).data(),
                        width) == 0) {
-        logger.log(ERROR, "Could not save noisy image");
+        PLOG_ERROR << "Could not save noisy image";
         return 1;
     }
-    logger.log(INFO, "Noisy image saved to: " + output_image_path);
+    PLOG_INFO << "Noisy image saved to: " + output_image_path;
 
 
     /**
@@ -441,7 +389,7 @@ int main(int argc, char *argv[]) {
 
 
     // Report here the Euclidean norm of \vec{v}
-    logger.log(INFO, "The Euclidean norm of v is: " + std::to_string(v.norm()));
+    PLOG_INFO << "The Euclidean norm of v is: " + std::to_string(v.norm());
 
 
     /**
@@ -453,7 +401,7 @@ int main(int argc, char *argv[]) {
     // Define the smoothing kernel Hav2
     // Define the matrix A1
     auto A1 = createAAvg2Matrix(height, width);
-    logger.log(INFO, "The number of non-zero entries in A1 is: " + std::to_string(countNonZeroElements(A1)));
+    PLOG_INFO << "The number of non-zero entries in A1 is: " + std::to_string(countNonZeroElements(A1));
 
     /**
      * Apply the previous smoothing filter to the noisy image by performing the matrix vector multiplication A1w.
@@ -468,10 +416,10 @@ int main(int argc, char *argv[]) {
     const std::string smoothed_image_path = "./ch1_result/output_smoothed.png";
     if (stbi_write_png(smoothed_image_path.c_str(), width, height, 1,
                        convertToUnsignedChar(smoothed_image_matrix).data(), width) == 0) {
-        logger.log(ERROR, "Could not save smoothed image");
+        PLOG_ERROR << "Could not save smoothed image";
         return 1;
     }
-    logger.log(INFO, "Smoothed image saved to: " + smoothed_image_path);
+    PLOG_INFO << "Smoothed image saved to: " + smoothed_image_path;
 
     /**
      * Write the convolution operation corresponding to the sharpening kernel Hsh2
@@ -479,9 +427,9 @@ int main(int argc, char *argv[]) {
      * entries in A2. Is A2 symmetric?
      */
     auto A2 = createHsh2Matrix(height, width);
-    logger.log(INFO, "The number of non-zero entries in A2 is: " + std::to_string(countNonZeroElements(A2)));
+    PLOG_INFO << "The number of non-zero entries in A2 is: " + std::to_string(countNonZeroElements(A2));
     // Report if matrix A2 is symmetric
-    logger.log(INFO, "Matrix A2 is symmetric: " + std::to_string(A2.isApprox(A2.transpose())));
+    PLOG_INFO << "Matrix A2 is symmetric: " + std::to_string(A2.isApprox(A2.transpose()));
 
 
     /**
@@ -497,16 +445,15 @@ int main(int argc, char *argv[]) {
     const std::string sharpened_image_path = "./ch1_result/output_sharpened.png";
     if (stbi_write_png(sharpened_image_path.c_str(), width, height, 1,
                        convertToUnsignedChar(sharpened_image_matrix).data(), width) == 0) {
-        logger.log(ERROR, "Could not save sharpened image");
+        PLOG_ERROR << "Could not save sharpened image";
         return 1;
     }
-    logger.log(INFO, "Sharpened image saved to: " + sharpened_image_path);
-
+    PLOG_INFO << "Sharpened image saved to : " + sharpened_image_path;
     /**
      * Export the Eigen matrix A2 and vector w in the .mtx format.
-     * Using a suitable iterative solver and preconditioner technique available in the LIS library compute the
-     * approximate solution to the linear system A2x = w prescribing a tolerance of 10−9.
-     * Report here the iteration count and the final residual.
+     * Using a suitable iterative solver and preconditioner technique available in the LIS library
+     * compute the approximate solution to the linear system A2x = w prescribing a tolerance of
+     * 10−9. Report here the iteration count and the final residual.
      */
     exportMatrixMarketExtended(A2, w, "./ch1_result/A2_w.mtx");
 
@@ -550,10 +497,10 @@ int main(int argc, char *argv[]) {
         lis_solver_get_residualnorm(solver, &resid);
 
         // Log details
-        logger.log(INFO, "Solver: " + solver_name);
-        logger.log(INFO, "Iterations: " + std::to_string(iter));
-        logger.log(INFO, "Residual: " + std::format("{}", resid));
-        logger.log(INFO, "Elapsed time: " + std::to_string(time) + " seconds");
+        PLOG_INFO << "Solver: " + solver_name;
+        PLOG_INFO << "Iterations: " + std::to_string(iter);
+        PLOG_INFO << "Residual: " + std::format("{}", resid);
+        PLOG_INFO << "Elapsed time: " + std::to_string(time) + " seconds";
 
         // Output results to .mtx and .png
         std::string output_file_mtx = "./ch1_result/" + solver_name + "_result.mtx";
@@ -583,9 +530,9 @@ int main(int argc, char *argv[]) {
      */
     // Define the detection kernel Hlab
     auto A3 = createLaplacianMatrixOptimized(height, width);
-    logger.log(INFO, "The number of non-zero entries in A3 is: " + std::to_string(countNonZeroElements(A3)));
+    PLOG_INFO << "The number of non-zero entries in A3 is: " + std::to_string(countNonZeroElements(A3));
     // Report if matrix A3 is symmetric
-    logger.log(INFO, "Matrix A3 is symmetric: " + std::to_string(A3.isApprox(A3.transpose())));
+    PLOG_INFO << "Matrix A3 is symmetric: " + std::to_string(A3.isApprox(A3.transpose()));
 
     /**
      * Apply the previous edge detection filter to the original image by performing the matrix
@@ -599,10 +546,10 @@ int main(int argc, char *argv[]) {
     const std::string laplacian_image_path = "./ch1_result/output_laplacian.png";
     if (stbi_write_png(laplacian_image_path.c_str(), width, height, 1,
                        convertToUnsignedChar(laplacian_image_matrix).data(), width) == 0) {
-        logger.log(ERROR, "Could not save edge detection image");
+        PLOG_ERROR << "Could not save edge detection image";
         return 1;
     }
-    logger.log(INFO, "Edge detection image saved to: " + laplacian_image_path);
+    PLOG_INFO << "Edge detection image saved to: " + laplacian_image_path;
 
     /**
      * Using a suitable iterative solver available in the Eigen library compute the approximate
@@ -626,15 +573,15 @@ int main(int argc, char *argv[]) {
             cg.compute(A3_I);
 
             if (cg.info() != Eigen::Success) {
-                logger.log(ERROR, solver_name + " solver failed to converge");
+                PLOG_ERROR << "Solver: " + solver_name + " failed to converge";
                 continue;
             }
             y = cg.solve(w);
 
             // Logging iteration count and residual
-            logger.log(INFO, "Solver: " + solver_name);
-            logger.log(INFO, "Iterations: " + std::to_string(cg.iterations()));
-            logger.log(INFO, "Final residual: " + std::format("{}", cg.error()));
+            PLOG_INFO << "Solver: " + solver_name;
+            PLOG_INFO << "Iterations: " + std::to_string(cg.iterations());
+            PLOG_INFO << "Final residual: " + std::format("{}", cg.error());
 
         } else if (solver_name == "BiCGSTAB") {
             // BiCGSTAB solver
@@ -643,15 +590,15 @@ int main(int argc, char *argv[]) {
             bicgstab.compute(A3_I);
 
             if (bicgstab.info() != Success) {
-                logger.log(ERROR, solver_name + " solver failed to converge");
+                PLOG_ERROR << "Solver: " + solver_name + " failed to converge";
                 continue;
             }
             y = bicgstab.solve(w);
 
             // Logging iteration count and residual
-            logger.log(INFO, "Solver: " + solver_name);
-            logger.log(INFO, "Iterations: " + std::to_string(bicgstab.iterations()));
-            logger.log(INFO, "Final residual: " + std::format("{}", bicgstab.error()));
+            PLOG_INFO << "Solver: " + solver_name;
+            PLOG_INFO << "Iterations: " + std::to_string(bicgstab.iterations());
+            PLOG_INFO << "Final residual: " + std::format("{}", bicgstab.error());
 
         } else if (solver_name == "SparseLU") {
             // SparseLU solver
@@ -659,16 +606,15 @@ int main(int argc, char *argv[]) {
             sparse_lu.compute(A3_I);
 
             if (sparse_lu.info() != Success) {
-                logger.log(ERROR, solver_name + " solver failed to converge");
+                PLOG_ERROR << "Solver: " + solver_name + " failed to converge";
                 continue;
             }
             y = sparse_lu.solve(w);
 
             // the final residual for the linear system (I + A3)y = w
             // Logging iteration count and residual (SparseLU doesn't iterate)
-            logger.log(INFO, "Solver: " + solver_name);
-            logger.log(INFO, "Iterations: 1 (direct solver)");
-            logger.log(INFO, "Final residual: n/a (direct solver)");
+            PLOG_INFO << "Solver: " + solver_name;
+            PLOG_INFO << "Final residual: " + std::format("{}", (A3_I * y - w).norm());
         }
 
         // Reshape the solution vector to a matrix
@@ -681,11 +627,10 @@ int main(int argc, char *argv[]) {
         const std::string y_image_path = "./ch1_result/" + solver_name + "_y.png";
         if (stbi_write_png(y_image_path.c_str(), width, height, 1, convertToUnsignedChar(y_matrix).data(), width) ==
             0) {
-            logger.log(ERROR, "Could not save image for solver: " + solver_name);
+            PLOG_ERROR << "Could not save image for solver: " + solver_name;
             continue;
         }
-        logger.log(INFO,
-                   std::string("Image saved for solver: ").append(solver_name).append(" to ").append(y_image_path));
+        PLOG_INFO << std::string("Image saved for solver: ").append(solver_name).append(" to ").append(y_image_path);
     }
 
     /**

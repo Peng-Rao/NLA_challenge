@@ -14,6 +14,7 @@ file(
 
 find_package(Stb REQUIRED)
 find_package(Eigen3 CONFIG REQUIRED)
+find_package(plog CONFIG REQUIRED)
 
 
 foreach (mainfile IN LISTS mains)
@@ -22,6 +23,7 @@ foreach (mainfile IN LISTS mains)
     add_executable(${mainname} ${mainfile})
     target_include_directories(${mainname} PRIVATE ${Stb_INCLUDE_DIR})
     target_link_libraries(${mainname} PRIVATE Eigen3::Eigen)
+    target_link_libraries(${mainname} PRIVATE plog::plog)
     # Link lis library
     target_link_libraries(${mainname} PRIVATE lis)
 endforeach ()
