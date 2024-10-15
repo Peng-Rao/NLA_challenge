@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.28)
-project(NLA_ch1)
+project(NLA_challenge)
 
 set(CMAKE_CXX_STANDARD 20)
-
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # include lis library
 include_directories(extern/lis/include)
 link_directories(extern/lis/lib)

@@ -38,4 +38,4 @@ dlopen=''
 dlpreopen=''
 
 # Directory that this library needs to be installed in:
-libdir='/Users/raopend/Workspace/NLA_ch1/extern/lis/lib'
+libdir='/Users/raopend/Workspace/NLA_challenge/extern/lis/lib'

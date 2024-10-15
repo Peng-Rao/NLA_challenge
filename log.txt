@@ -1,0 +1,50 @@
+[2024-10-15 11:43:19] ERROR: Could not load image
+[2024-10-15 11:44:02] ERROR: Could not load image
+[2024-10-15 11:44:33] INFO: The size of the original image matrix is: 341 x 256
+[2024-10-15 11:44:33] INFO: Noisy image saved to: ./ch1_result/output_noisy.png
+[2024-10-15 11:44:33] INFO: The Euclidean norm of v is: 35497.163746
+[2024-10-15 11:44:33] INFO: The number of non-zero entries in A1 is: 782086
+[2024-10-15 11:44:33] ERROR: Could not save smoothed image
+[2024-10-15 11:46:14] INFO: The size of the original image matrix is: 341 x 256
+[2024-10-15 11:46:14] INFO: Noisy image saved to: ./ch1_result/output_noisy.png
+[2024-10-15 11:46:14] INFO: The Euclidean norm of v is: 35497.163746
+[2024-10-15 11:46:14] INFO: The number of non-zero entries in A1 is: 782086
+[2024-10-15 11:46:14] INFO: Smoothed image saved to: ./ch1_result/output_smoothed.png
+[2024-10-15 11:46:14] INFO: The number of non-zero entries in A2 is: 435286
+[2024-10-15 11:46:14] INFO: Matrix A2 is symmetric: 0
+[2024-10-15 11:46:14] INFO: Sharpened image saved to: ./ch1_result/output_sharpened.png
+[2024-10-15 11:46:15] INFO: Solver: cg
+[2024-10-15 11:46:15] INFO: Iterations: 1
+[2024-10-15 11:46:15] INFO: Residual: 0
+[2024-10-15 11:46:15] INFO: Elapsed time: 0.000002 seconds
+[2024-10-15 11:46:15] INFO: Solver: bicg
+[2024-10-15 11:46:15] INFO: Iterations: 1
+[2024-10-15 11:46:15] INFO: Residual: 0
+[2024-10-15 11:46:15] INFO: Elapsed time: 0.000002 seconds
+[2024-10-15 11:46:15] INFO: Solver: jacobi
+[2024-10-15 11:46:15] INFO: Iterations: 1001
+[2024-10-15 11:46:15] INFO: Residual: nan
+[2024-10-15 11:46:15] INFO: Elapsed time: 0.000037 seconds
+[2024-10-15 11:46:15] INFO: Solver: gs
+[2024-10-15 11:46:15] INFO: Iterations: 0
+[2024-10-15 11:46:15] INFO: Residual: 0
+[2024-10-15 11:46:15] INFO: Elapsed time: 0.000009 seconds
+[2024-10-15 11:46:15] INFO: Solver: bicgstab
+[2024-10-15 11:46:15] INFO: Iterations: 1
+[2024-10-15 11:46:15] INFO: Residual: 0
+[2024-10-15 11:46:15] INFO: Elapsed time: 0.000003 seconds
+[2024-10-15 11:46:15] INFO: The number of non-zero entries in A3 is: 435286
+[2024-10-15 11:46:15] INFO: Matrix A3 is symmetric: 1
+[2024-10-15 11:46:15] INFO: Edge detection image saved to: ./ch1_result/output_laplacian.png
+[2024-10-15 11:46:15] INFO: Solver: ConjugateGradient
+[2024-10-15 11:46:15] INFO: Iterations: 32
+[2024-10-15 11:46:15] INFO: Final residual: 7.54012072370876e-11
+[2024-10-15 11:46:15] INFO: Image saved for solver: ConjugateGradient to ./ch1_result/ConjugateGradient_y.png
+[2024-10-15 11:46:16] INFO: Solver: BiCGSTAB
+[2024-10-15 11:46:16] INFO: Iterations: 23
+[2024-10-15 11:46:16] INFO: Final residual: 7.219492513089352e-11
+[2024-10-15 11:46:16] INFO: Image saved for solver: BiCGSTAB to ./ch1_result/BiCGSTAB_y.png
+[2024-10-15 11:46:29] INFO: Solver: SparseLU
+[2024-10-15 11:46:29] INFO: Iterations: 1 (direct solver)
+[2024-10-15 11:46:29] INFO: Final residual: n/a (direct solver)
+[2024-10-15 11:46:29] INFO: Image saved for solver: SparseLU to ./ch1_result/SparseLU_y.png
