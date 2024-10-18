@@ -1,10 +1,7 @@
-#define STB_IMAGE_IMPLEMENTATION
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-
-
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include <unsupported/Eigen/SparseExtra>
+#include "utils.h"
 
 #include "stb_image.h"
 #include "stb_image_write.h"
@@ -31,18 +28,6 @@ int countNonZeroElements(const SparseMatrix<T> &matrix) {
         }
     }
     return count;
-}
-
-// Utility function to convert and clip values to the range [0, 255]
-Matrix<unsigned char, Dynamic, Dynamic, RowMajor> convertToUnsignedChar(const MatrixXd &matrix) {
-    return matrix.unaryExpr([](const double val) -> unsigned char {
-        return static_cast<unsigned char>(std::min(255.0, std::max(0.0, val))); // Clip values between 0 and 255
-    });
-}
-
-// Function to convert RGB to grayscale
-MatrixXd convertToGrayscale(const MatrixXd &red, const MatrixXd &green, const MatrixXd &blue) {
-    return 0.299 * red + 0.587 * green + 0.114 * blue;
 }
 
 // Function to create a sparse matrix representing the A_avg 2 smoothing kernel
@@ -329,8 +314,6 @@ int main(int argc, char *argv[]) {
     }
     // Prepare Eigen matrices for each RGB channel
     MatrixXd red(height, width), green(height, width), blue(height, width);
-    // build the grayscale image matrix
-    const Matrix<unsigned char, Dynamic, Dynamic> image_matrix(height, width);
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
             const int index = (i * width + j) * 3; // 3 channels (RGB)
@@ -359,7 +342,7 @@ int main(int argc, char *argv[]) {
      */
 
     // generate the random matrix, color ranging between -50 and 50
-    MatrixXd noise_matrix = MatrixXd::Random(image_matrix.rows(), image_matrix.cols());
+    MatrixXd noise_matrix = MatrixXd::Random(grayscale_image_matrix.rows(), grayscale_image_matrix.cols());
     noise_matrix = 50 * noise_matrix;
     // add the noise to the image matrix
     MatrixXd noisy_image_matrix = grayscale_image_matrix.cast<double>() + noise_matrix;

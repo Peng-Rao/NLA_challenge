@@ -1,0 +1,7 @@
+﻿2024-10-18 12:25:54.091 INFO  [1709669] [main@18] Image loaded successfully.
+2024-10-18 12:28:00.476 INFO  [1714960] [main@18] Image loaded successfully.
+2024-10-18 12:31:54.635 INFO  [1718447] [main@18] Image loaded successfully.
+2024-10-18 12:38:19.740 INFO  [1723621] [main@18] Image loaded successfully.
+2024-10-18 12:39:54.634 INFO  [1724880] [main@18] Image loaded successfully.
+2024-10-18 12:41:06.433 INFO  [1726611] [main@18] Image loaded successfully.
+2024-10-18 12:41:06.440 INFO  [1726611] [main@31] The size of the original image matrix is: 341 x 256
