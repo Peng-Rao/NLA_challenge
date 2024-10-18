@@ -11,8 +11,6 @@
 #include <plog/Initializers/RollingFileInitializer.h>
 #include <plog/Log.h>
 
-#include <iostream>
-
 using namespace Eigen;
 
 
@@ -232,67 +230,6 @@ SparseMatrix<double> createLaplacianMatrixOptimized(const int height, const int 
     return S;
 }
 
-// // Function to save a sparse matrix in MatrixMarket format
-// void exportMatrixMarketExtended(const SparseMatrix<double> &mat, const VectorXd &vec, const std::string &filename) {
-//     std::ofstream file(filename);
-//
-//     // Matrix Market header with additional vector information
-//     file << "%%MatrixMarket matrix coordinate real general\n";
-//
-//     // Write dimensions and non-zero count for the matrix and vector
-//     file << mat.rows() << " " << mat.cols() << " " << mat.nonZeros() << " "
-//          << "1"
-//          << " 0\n";
-//
-//     // Write the matrix in coordinate format (row, col, value)
-//     for (int k = 0; k < mat.outerSize(); ++k) {
-//         for (SparseMatrix<double>::InnerIterator it(mat, k); it; ++it) {
-//             file << (it.row() + 1) << " " << (it.col() + 1) << " " << it.value() << "\n";
-//         }
-//     }
-//
-//     // Write the vector data (row, value)
-//     for (int i = 0; i < vec.size(); ++i) {
-//         file << (i + 1) << " " << vec(i) << "\n";
-//     }
-//
-//     file.close();
-// }
-
-// Function to read a MatrixMarket file, reshape it, and save as an image
-bool saveMatrixMarketToImage(const std::string &inputFilePath, const std::string &outputFilePath, const int height,
-                             const int width) {
-    VectorXd imgVector(height * width);
-
-    // Read the MatrixMarket file
-    std::ifstream file(inputFilePath);
-    if (!file) {
-        std::cerr << "无法打开文件: " << inputFilePath << std::endl;
-        return false;
-    }
-
-    std::string line;
-    getline(file, line); // skip the first line
-    getline(file, line); // skip the second line
-
-    int index;
-    double real, imag;
-
-    for (int i = 0; i < height * width; ++i) {
-        file >> index >> real >> imag;
-        imgVector(i) = real;
-    }
-
-    file.close();
-
-    if (const auto imgMatrix = imgVector.reshaped<RowMajor>(height, width);
-        stbi_write_png(outputFilePath.c_str(), width, height, 1, convertToUnsignedChar(imgMatrix).data(), width) == 0) {
-        std::cerr << "保存图像失败: " << outputFilePath << std::endl;
-        return false;
-    }
-
-    return true;
-}
 
 int main(int argc, char *argv[]) {
     // Initialize the logger

@@ -40,6 +40,7 @@ bool loadImage(const char *imagePath, Eigen::MatrixXd &red, Eigen::MatrixXd &gre
     return true;
 }
 
+
 // FUnction to cast Eigen::MatrixXd to unsigned char
 Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic> convertToUnsignedChar(const Eigen::MatrixXd &matrix) {
     return matrix.unaryExpr([](const double val) -> unsigned char {
@@ -73,4 +74,37 @@ void exportMatrixMarketExtended(const Eigen::SparseMatrix<double> &mat, const Ei
     }
 
     file.close();
+}
+
+// Function to read a MatrixMarket file, reshape it, and save as an image
+bool saveMatrixMarketToImage(const std::string &inputFilePath, const std::string &outputFilePath, const int height,
+                             const int width) {
+    Eigen::VectorXd imgVector(height * width);
+
+    // Read the MatrixMarket file
+    std::ifstream file(inputFilePath);
+    if (!file) {
+        return false;
+    }
+
+    std::string line;
+    getline(file, line); // skip the first line
+    getline(file, line); // skip the second line
+
+    int index;
+    double real, imag;
+
+    for (int i = 0; i < height * width; ++i) {
+        file >> index >> real >> imag;
+        imgVector(i) = real;
+    }
+
+    file.close();
+
+    if (const auto imgMatrix = imgVector.reshaped<Eigen::RowMajor>(height, width);
+        stbi_write_png(outputFilePath.c_str(), width, height, 1, convertToUnsignedChar(imgMatrix).data(), width) == 0) {
+        return false;
+    }
+
+    return true;
 }

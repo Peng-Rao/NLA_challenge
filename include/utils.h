@@ -12,3 +12,6 @@ Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic> convertToUnsignedCh
 
 void exportMatrixMarketExtended(const Eigen::SparseMatrix<double> &mat, const Eigen::VectorXd &vec,
                                 const std::string &filename);
+
+bool saveMatrixMarketToImage(const std::string &inputFilePath, const std::string &outputFilePath, int height,
+                             int width);
