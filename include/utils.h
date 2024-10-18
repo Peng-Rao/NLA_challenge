@@ -9,3 +9,6 @@ bool loadImage(const char *imagePath, Eigen::MatrixXd &red, Eigen::MatrixXd &gre
 
 
 Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic> convertToUnsignedChar(const Eigen::MatrixXd &matrix);
+
+void exportMatrixMarketExtended(const Eigen::SparseMatrix<double> &mat, const Eigen::VectorXd &vec,
+                                const std::string &filename);

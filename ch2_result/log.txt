@@ -5,3 +5,13 @@
 2024-10-18 12:39:54.634 INFO  [1724880] [main@18] Image loaded successfully.
 2024-10-18 12:41:06.433 INFO  [1726611] [main@18] Image loaded successfully.
 2024-10-18 12:41:06.440 INFO  [1726611] [main@31] The size of the original image matrix is: 341 x 256
+2024-10-18 12:47:10.556 INFO  [1732175] [main@17] Image loaded successfully.
+2024-10-18 12:47:10.563 INFO  [1732175] [main@29] The size of the original image matrix is: 341 x 256
+2024-10-18 12:49:36.926 INFO  [1735050] [main@17] Image loaded successfully.
+2024-10-18 12:49:36.933 INFO  [1735050] [main@29] The size of the original image matrix is: 341 x 256
+2024-10-18 13:49:48.261 INFO  [1813216] [main@17] Image loaded successfully.
+2024-10-18 13:49:48.266 INFO  [1813216] [main@29] The size of the original image matrix is: 341 x 256
+2024-10-18 13:49:48.333 INFO  [1813216] [main@38] The Euclidean norm of the Gram matrix is: 1044589759.116514
+2024-10-18 15:17:02.194 INFO  [1902281] [main@17] Image loaded successfully.
+2024-10-18 15:17:02.201 INFO  [1902281] [main@29] The size of the original image matrix is: 341 x 256
+2024-10-18 15:17:02.270 INFO  [1902281] [main@38] The Euclidean norm of the Gram matrix is: 1044589759.116514

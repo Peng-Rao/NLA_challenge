@@ -232,32 +232,32 @@ SparseMatrix<double> createLaplacianMatrixOptimized(const int height, const int 
     return S;
 }
 
-// Function to save a sparse matrix in MatrixMarket format
-void exportMatrixMarketExtended(const SparseMatrix<double> &mat, const VectorXd &vec, const std::string &filename) {
-    std::ofstream file(filename);
-
-    // Matrix Market header with additional vector information
-    file << "%%MatrixMarket matrix coordinate real general\n";
-
-    // Write dimensions and non-zero count for the matrix and vector
-    file << mat.rows() << " " << mat.cols() << " " << mat.nonZeros() << " "
-         << "1"
-         << " 0\n";
-
-    // Write the matrix in coordinate format (row, col, value)
-    for (int k = 0; k < mat.outerSize(); ++k) {
-        for (SparseMatrix<double>::InnerIterator it(mat, k); it; ++it) {
-            file << (it.row() + 1) << " " << (it.col() + 1) << " " << it.value() << "\n";
-        }
-    }
-
-    // Write the vector data (row, value)
-    for (int i = 0; i < vec.size(); ++i) {
-        file << (i + 1) << " " << vec(i) << "\n";
-    }
-
-    file.close();
-}
+// // Function to save a sparse matrix in MatrixMarket format
+// void exportMatrixMarketExtended(const SparseMatrix<double> &mat, const VectorXd &vec, const std::string &filename) {
+//     std::ofstream file(filename);
+//
+//     // Matrix Market header with additional vector information
+//     file << "%%MatrixMarket matrix coordinate real general\n";
+//
+//     // Write dimensions and non-zero count for the matrix and vector
+//     file << mat.rows() << " " << mat.cols() << " " << mat.nonZeros() << " "
+//          << "1"
+//          << " 0\n";
+//
+//     // Write the matrix in coordinate format (row, col, value)
+//     for (int k = 0; k < mat.outerSize(); ++k) {
+//         for (SparseMatrix<double>::InnerIterator it(mat, k); it; ++it) {
+//             file << (it.row() + 1) << " " << (it.col() + 1) << " " << it.value() << "\n";
+//         }
+//     }
+//
+//     // Write the vector data (row, value)
+//     for (int i = 0; i < vec.size(); ++i) {
+//         file << (i + 1) << " " << vec(i) << "\n";
+//     }
+//
+//     file.close();
+// }
 
 // Function to read a MatrixMarket file, reshape it, and save as an image
 bool saveMatrixMarketToImage(const std::string &inputFilePath, const std::string &outputFilePath, const int height,
@@ -384,7 +384,6 @@ int main(int argc, char *argv[]) {
     // Define the matrix A1
     auto A1 = createAAvg2Matrix(height, width);
     PLOG_INFO << "The number of non-zero entries in A1 is: " + std::to_string(countNonZeroElements(A1));
-
     /**
      * Apply the previous smoothing filter to the noisy image by performing the matrix vector multiplication A1w.
      * Export and upload the resulting image.
@@ -438,7 +437,6 @@ int main(int argc, char *argv[]) {
      * 10−9. Report here the iteration count and the final residual.
      */
     exportMatrixMarketExtended(A2, w, "../ch1_result/A2_w.mtx");
-
     LIS_MATRIX A;
     LIS_VECTOR x, b;
     LIS_SOLVER solver;

@@ -1,11 +1,12 @@
 #include "utils.h"
-#include <Eigen/src/Core/util/Constants.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 
 #include "stb_image.h"
 #include "stb_image_write.h"
+
+#include <fstream>
 
 // Function to convert RGB to grayscale
 Eigen::MatrixXd convertToGrayscale(const Eigen::MatrixXd &red, const Eigen::MatrixXd &green,
@@ -44,4 +45,32 @@ Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic> convertToUnsignedCh
     return matrix.unaryExpr([](const double val) -> unsigned char {
         return static_cast<unsigned char>(std::min(255.0, std::max(0.0, val))); // Clip values between 0 and 255
     });
+}
+
+// Function to export a matrix to Matrix Market format
+void exportMatrixMarketExtended(const Eigen::SparseMatrix<double> &mat, const Eigen::VectorXd &vec,
+                                const std::string &filename) {
+    std::ofstream file(filename);
+
+    // Matrix Market header with additional vector information
+    file << "%%MatrixMarket matrix coordinate real general\n";
+
+    // Write dimensions and non-zero count for the matrix and vector
+    file << mat.rows() << " " << mat.cols() << " " << mat.nonZeros() << " "
+         << "1"
+         << " 0\n";
+
+    // Write the matrix in coordinate format (row, col, value)
+    for (int k = 0; k < mat.outerSize(); ++k) {
+        for (Eigen::SparseMatrix<double>::InnerIterator it(mat, k); it; ++it) {
+            file << (it.row() + 1) << " " << (it.col() + 1) << " " << it.value() << "\n";
+        }
+    }
+
+    // Write the vector data (row, value)
+    for (int i = 0; i < vec.size(); ++i) {
+        file << (i + 1) << " " << vec(i) << "\n";
+    }
+
+    file.close();
 }
