@@ -7,9 +7,10 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 include_directories(extern/lis/include)
 link_directories(extern/lis/lib)
 
+include_directories(include)
 file(
         GLOB_RECURSE mains RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
-        "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/challenge*.cpp"
 )
 
 find_package(Stb REQUIRED)

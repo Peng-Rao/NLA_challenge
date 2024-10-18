@@ -14,7 +14,6 @@
 #include <plog/Initializers/RollingFileInitializer.h>
 #include <plog/Log.h>
 
-#include <ctime>
 #include <iostream>
 
 using namespace Eigen;
@@ -312,7 +311,7 @@ bool saveMatrixMarketToImage(const std::string &inputFilePath, const std::string
 
 int main(int argc, char *argv[]) {
     // Initialize the logger
-    plog::init(plog::debug, "./ch1_result/log.txt");
+    plog::init(plog::debug, "../ch1_result/log.txt");
     /**
      * Load the image as an Eigen matrix with size m × n.
      * Each entry in the matrix corresponds to a pixel on the screen and takes a value somewhere between 0 (black) and
@@ -365,7 +364,7 @@ int main(int argc, char *argv[]) {
     // add the noise to the image matrix
     MatrixXd noisy_image_matrix = grayscale_image_matrix.cast<double>() + noise_matrix;
     // Save the grayscale image using stb_image_write
-    const std::string output_image_path = "./ch1_result/output_noisy.png";
+    const std::string output_image_path = "../ch1_result/output_noisy.png";
     if (stbi_write_png(output_image_path.c_str(), width, height, 1, convertToUnsignedChar(noisy_image_matrix).data(),
                        width) == 0) {
         PLOG_ERROR << "Could not save noisy image";
@@ -413,7 +412,7 @@ int main(int argc, char *argv[]) {
     // Reshape the smoothed image vector to a matrix
     auto smoothed_image_matrix = smoothed_image.reshaped<RowMajor>(height, width);
     // Save the smoothed image using stb_image_write
-    const std::string smoothed_image_path = "./ch1_result/output_smoothed.png";
+    const std::string smoothed_image_path = "../ch1_result/output_smoothed.png";
     if (stbi_write_png(smoothed_image_path.c_str(), width, height, 1,
                        convertToUnsignedChar(smoothed_image_matrix).data(), width) == 0) {
         PLOG_ERROR << "Could not save smoothed image";
@@ -442,7 +441,7 @@ int main(int argc, char *argv[]) {
     // Reshape the sharpened image vector to a matrix
     auto sharpened_image_matrix = sharpened_image.reshaped<RowMajor>(height, width);
     // Save the sharpened image using stb_image_write
-    const std::string sharpened_image_path = "./ch1_result/output_sharpened.png";
+    const std::string sharpened_image_path = "../ch1_result/output_sharpened.png";
     if (stbi_write_png(sharpened_image_path.c_str(), width, height, 1,
                        convertToUnsignedChar(sharpened_image_matrix).data(), width) == 0) {
         PLOG_ERROR << "Could not save sharpened image";
@@ -455,7 +454,7 @@ int main(int argc, char *argv[]) {
      * compute the approximate solution to the linear system A2x = w prescribing a tolerance of
      * 10−9. Report here the iteration count and the final residual.
      */
-    exportMatrixMarketExtended(A2, w, "./ch1_result/A2_w.mtx");
+    exportMatrixMarketExtended(A2, w, "../ch1_result/A2_w.mtx");
 
     LIS_MATRIX A;
     LIS_VECTOR x, b;
@@ -478,7 +477,7 @@ int main(int argc, char *argv[]) {
     lis_vector_create(LIS_COMM_WORLD, &x);
     lis_matrix_set_type(A, LIS_MATRIX_CSR);
 
-    const std::string input_file = "./ch1_result/A2_w.mtx";
+    const std::string input_file = "../ch1_result/A2_w.mtx";
     lis_input(A, b, x, const_cast<char *>(input_file.c_str()));
     lis_vector_duplicate(A, &x);
 
@@ -503,8 +502,8 @@ int main(int argc, char *argv[]) {
         PLOG_INFO << "Elapsed time: " + std::to_string(time) + " seconds";
 
         // Output results to .mtx and .png
-        std::string output_file_mtx = "./ch1_result/" + solver_name + "_result.mtx";
-        std::string output_file_png = "./ch1_result/" + solver_name + "_result.png";
+        std::string output_file_mtx = "../ch1_result/" + solver_name + "_result.mtx";
+        std::string output_file_png = "../ch1_result/" + solver_name + "_result.png";
         lis_output_vector(x, LIS_FMT_MM, const_cast<char *>(output_file_mtx.c_str()));
 
         /**
@@ -543,7 +542,7 @@ int main(int argc, char *argv[]) {
     // Reshape the edge detection image vector to a matrix
     auto laplacian_image_matrix = laplacian_image.reshaped<RowMajor>(height, width);
     // Save the edge detection image using stb_image_write
-    const std::string laplacian_image_path = "./ch1_result/output_laplacian.png";
+    const std::string laplacian_image_path = "../ch1_result/output_laplacian.png";
     if (stbi_write_png(laplacian_image_path.c_str(), width, height, 1,
                        convertToUnsignedChar(laplacian_image_matrix).data(), width) == 0) {
         PLOG_ERROR << "Could not save edge detection image";
@@ -624,7 +623,7 @@ int main(int argc, char *argv[]) {
          * Convert the image stored in the vector y into a .png image and upload it.
          */
         // Save the resulting image as a PNG file using stb_image_write
-        const std::string y_image_path = "./ch1_result/" + solver_name + "_y.png";
+        const std::string y_image_path = "../ch1_result/" + solver_name + "_y.png";
         if (stbi_write_png(y_image_path.c_str(), width, height, 1, convertToUnsignedChar(y_matrix).data(), width) ==
             0) {
             PLOG_ERROR << "Could not save image for solver: " + solver_name;
