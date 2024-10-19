@@ -1,7 +1,10 @@
 #include "utils.h"
 
+#include <Eigen/Eigenvalues>
+#include <Eigen/src/Eigenvalues/EigenSolver.h>
 #include <plog/Initializers/RollingFileInitializer.h>
 #include <plog/Log.h>
+#include <string>
 #include <unsupported/Eigen/SparseExtra>
 
 int main(int argc, char *argv[]) {
@@ -13,6 +16,7 @@ int main(int argc, char *argv[]) {
     int width, height, channels;
     auto *image_input_path = "/Users/raopend/Workspace/NLA_challenge/photos/256px-Albert_Einstein_Head.jpg";
     Eigen::MatrixXd red(height, width), green(height, width), blue(height, width);
+
     if (loadImage(image_input_path, red, green, blue, width, height, channels)) {
         PLOG_INFO << "Image loaded successfully.";
     } else {
@@ -20,7 +24,7 @@ int main(int argc, char *argv[]) {
     }
 
     // build the grayscale image matrix
-    Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> grayscale_image_matrix =
+    const Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> grayscale_image_matrix =
             convertToGrayscale(red, green, blue).unaryExpr([](const double val) -> unsigned char {
                 return static_cast<unsigned char>(val * 255.0);
             });
@@ -36,5 +40,19 @@ int main(int argc, char *argv[]) {
     // Report the euclidean norm of the Gram matrix
     const double euclidean_norm = gram_matrix.norm();
     PLOG_INFO << "The Euclidean norm of the Gram matrix is: " + std::to_string(euclidean_norm);
+
+    // Solve the eigenvalues of the Gram matrix
+    Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> es(gram_matrix);
+    const Eigen::VectorXd eigenvalues = es.eigenvalues().real();
+    const Eigen::MatrixXd eigenvectors = es.eigenvectors().real();
+    // Report the two largest eigenvalues
+    // Sort the eigenvalues in descending order
+
+    // Report the two largest eigenvalues
+    PLOG_INFO << "The two largest eigenvalues are: " + std::to_string(eigenvalues(eigenvalues.size() - 1)) + " and " +
+                         std::to_string(eigenvalues(eigenvalues.size() - 2));
+
+    // Export gram matrix to a .mtx file
+    saveMarket(gram_matrix, "../ch2_result/gram_matrix.mtx");
     return 0;
 }
