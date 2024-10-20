@@ -1,7 +1,7 @@
 #include "utils.h"
 
 #include <Eigen/Eigenvalues>
-#include <Eigen/src/Eigenvalues/EigenSolver.h>
+#include <Eigen/SVD>
 #include <plog/Initializers/RollingFileInitializer.h>
 #include <plog/Log.h>
 #include <string>
@@ -54,5 +54,19 @@ int main(int argc, char *argv[]) {
 
     // Export gram matrix to a .mtx file
     saveMarket(gram_matrix, "../ch2_result/gram_matrix.mtx");
+
+    // perform a singular value decomposition of thematrix A.
+    Eigen::JacobiSVD<Eigen::MatrixXd> jcb_svd;
+    jcb_svd.compute(A, Eigen::ComputeThinU | Eigen::ComputeThinV);
+    PLOG_INFO << "The largest singular values of the matrix A are: " + std::to_string(jcb_svd.singularValues()(0)) +
+                         " and " + std::to_string(jcb_svd.singularValues()(1)) + " using Jacobi SVD.";
+    Eigen::BDCSVD<Eigen::MatrixXd> bdcs_svd;
+    bdcs_svd.compute(A, Eigen::ComputeThinU | Eigen::ComputeThinV);
+    PLOG_INFO << "The largest singular values of the matrix A are: " + std::to_string(bdcs_svd.singularValues()(0)) +
+                         " and " + std::to_string(bdcs_svd.singularValues()(1)) + " using BDC SVD.";
+    // Get the diagonal matrix \Sigma
+    const Eigen::MatrixXd sigma = bdcs_svd.singularValues().asDiagonal();
+    // Report the norm of \Sigma
+    PLOG_INFO << "The norm of the diagonal matrix Sigma is: " + std::to_string(sigma.norm());
     return 0;
 }
