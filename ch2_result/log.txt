@@ -1,23 +1,82 @@
-﻿2024-10-20 23:54:39.886 INFO  [132766] [main@20] Image loaded successfully.
-2024-10-20 23:54:39.892 INFO  [132766] [main@32] The size of the original image matrix is: 341 x 256
-2024-10-20 23:54:39.959 INFO  [132766] [main@41] The Euclidean norm of the Gram matrix is: 1044589759.116514
-2024-10-20 23:54:40.275 INFO  [132766] [main@51] The two largest eigenvalues are: 1039955920.660437 and 90873022.062178
-2024-10-20 23:54:42.366 INFO  [132766] [main@60] The largest singular values of the matrix A are: 32248.347565 and 9532.734239
-2024-10-21 00:14:34.232 INFO  [151586] [main@20] Image loaded successfully.
-2024-10-21 00:14:34.238 INFO  [151586] [main@32] The size of the original image matrix is: 341 x 256
-2024-10-21 00:14:34.306 INFO  [151586] [main@41] The Euclidean norm of the Gram matrix is: 1044589759.116514
-2024-10-21 00:14:34.629 INFO  [151586] [main@51] The two largest eigenvalues are: 1039955920.660437 and 90873022.062178
-2024-10-21 00:14:36.688 INFO  [151586] [main@60] The largest singular values of the matrix A are: 32248.347565 and 9532.734239
-2024-10-21 00:19:09.730 INFO  [156672] [main@21] Image loaded successfully.
-2024-10-21 00:19:09.735 INFO  [156672] [main@33] The size of the original image matrix is: 341 x 256
-2024-10-21 00:19:09.801 INFO  [156672] [main@42] The Euclidean norm of the Gram matrix is: 1044589759.116514
-2024-10-21 00:19:10.120 INFO  [156672] [main@52] The two largest eigenvalues are: 1039955920.660437 and 90873022.062178
-2024-10-21 00:19:12.109 INFO  [156672] [main@61] The largest singular values of the matrix A are: 32248.347565 and 9532.734239 using Jacobi SVD.
-2024-10-21 00:19:13.444 INFO  [156672] [main@65] The largest singular values of the matrix A are: 32248.347565 and 9532.734239 using BDC SVD.
-2024-10-21 00:21:38.683 INFO  [159227] [main@21] Image loaded successfully.
-2024-10-21 00:21:38.688 INFO  [159227] [main@33] The size of the original image matrix is: 341 x 256
-2024-10-21 00:21:38.755 INFO  [159227] [main@42] The Euclidean norm of the Gram matrix is: 1044589759.116514
-2024-10-21 00:21:39.078 INFO  [159227] [main@52] The two largest eigenvalues are: 1039955920.660437 and 90873022.062178
-2024-10-21 00:21:41.212 INFO  [159227] [main@61] The largest singular values of the matrix A are: 32248.347565 and 9532.734239 using Jacobi SVD.
-2024-10-21 00:21:42.518 INFO  [159227] [main@65] The largest singular values of the matrix A are: 32248.347565 and 9532.734239 using BDC SVD.
-2024-10-21 00:21:42.518 INFO  [159227] [main@70] The norm of the diagonal matrix Sigma is: 35497.163746
+﻿2024-10-21 23:47:22.247 INFO  [941011] [main@24] Image loaded successfully.
+2024-10-21 23:47:22.254 INFO  [941011] [main@37] The size of the original image matrix is: 341 x 256
+2024-10-21 23:47:22.322 INFO  [941011] [main@46] The Euclidean norm of the Gram matrix is: 1044589759.116514
+2024-10-21 23:47:22.649 INFO  [941011] [main@54] The two largest eigenvalues are: 1039955920.660437 and 90873022.062178
+2024-10-21 23:47:24.709 INFO  [941011] [main@63] The largest singular values of the matrix A are: 32248.347565 and 9532.734239 using Jacobi SVD.
+2024-10-21 23:47:26.049 INFO  [941011] [main@67] The largest singular values of the matrix A are: 32248.347565 and 9532.734239 using BDC SVD.
+2024-10-21 23:47:26.049 INFO  [941011] [main@73] The norm of the diagonal matrix Sigma is: 35497.163746
+2024-10-21 23:47:26.051 INFO  [941011] [main@80] The number of nonzero entries in the matrix C1 is: 13640
+2024-10-21 23:47:26.051 INFO  [941011] [main@81] The number of nonzero entries in the matrix D1 is: 10240
+2024-10-21 23:47:26.056 INFO  [941011] [main@88] The number of nonzero entries in the matrix C2 is: 27280
+2024-10-21 23:47:26.056 INFO  [941011] [main@89] The number of nonzero entries in the matrix D2 is: 20480
+2024-10-21 23:47:26.137 INFO  [941011] [main@111] The Euclidean norm of the checkerboard image is: 36062.445841
+2024-10-21 23:47:27.038 INFO  [941011] [main@124] The largest singular values of the noisy checkerboard image are: 25535.040248 and 25483.513147 using Jacobi SVD.
+2024-10-21 23:47:55.429 INFO  [941776] [main@24] Image loaded successfully.
+2024-10-21 23:47:55.435 INFO  [941776] [main@37] The size of the original image matrix is: 341 x 256
+2024-10-21 23:47:55.503 INFO  [941776] [main@46] The Euclidean norm of the Gram matrix is: 1044589759.116514
+2024-10-21 23:47:55.829 INFO  [941776] [main@54] The two largest eigenvalues are: 1039955920.660437 and 90873022.062178
+2024-10-21 23:47:57.862 INFO  [941776] [main@63] The largest singular values of the matrix A are: 32248.347565 and 9532.734239 using Jacobi SVD.
+2024-10-21 23:47:59.192 INFO  [941776] [main@67] The largest singular values of the matrix A are: 32248.347565 and 9532.734239 using BDC SVD.
+2024-10-21 23:47:59.192 INFO  [941776] [main@73] The norm of the diagonal matrix Sigma is: 35497.163746
+2024-10-21 23:47:59.194 INFO  [941776] [main@80] The number of nonzero entries in the matrix C1 is: 13640
+2024-10-21 23:47:59.194 INFO  [941776] [main@81] The number of nonzero entries in the matrix D1 is: 10240
+2024-10-21 23:47:59.199 INFO  [941776] [main@88] The number of nonzero entries in the matrix C2 is: 27280
+2024-10-21 23:47:59.199 INFO  [941776] [main@89] The number of nonzero entries in the matrix D2 is: 20480
+2024-10-21 23:47:59.278 INFO  [941776] [main@111] The Euclidean norm of the checkerboard image is: 36062.445841
+2024-10-21 23:48:00.181 INFO  [941776] [main@124] The largest singular values of the noisy checkerboard image are: 25535.040248 and 25483.513147 using Jacobi SVD.
+2024-10-21 23:49:51.806 INFO  [943922] [main@24] Image loaded successfully.
+2024-10-21 23:49:51.822 INFO  [943922] [main@37] The size of the original image matrix is: 341 x 256
+2024-10-21 23:49:51.893 INFO  [943922] [main@46] The Euclidean norm of the Gram matrix is: 1044589759.116514
+2024-10-21 23:49:52.233 INFO  [943922] [main@54] The two largest eigenvalues are: 1039955920.660437 and 90873022.062178
+2024-10-21 23:49:54.308 INFO  [943922] [main@63] The largest singular values of the matrix A are: 32248.347565 and 9532.734239 using Jacobi SVD.
+2024-10-21 23:49:55.647 INFO  [943922] [main@67] The largest singular values of the matrix A are: 32248.347565 and 9532.734239 using BDC SVD.
+2024-10-21 23:49:55.648 INFO  [943922] [main@73] The norm of the diagonal matrix Sigma is: 35497.163746
+2024-10-21 23:49:55.650 INFO  [943922] [main@80] The number of nonzero entries in the matrix C1 is: 13640
+2024-10-21 23:49:55.650 INFO  [943922] [main@81] The number of nonzero entries in the matrix D1 is: 10240
+2024-10-21 23:49:55.655 INFO  [943922] [main@88] The number of nonzero entries in the matrix C2 is: 27280
+2024-10-21 23:49:55.655 INFO  [943922] [main@89] The number of nonzero entries in the matrix D2 is: 20480
+2024-10-21 23:49:55.734 INFO  [943922] [main@111] The Euclidean norm of the checkerboard image is: 36062.445841
+2024-10-21 23:49:56.631 INFO  [943922] [main@124] The largest singular values of the noisy checkerboard image are: 25535.040248 and 25483.513147 using Jacobi SVD.
+2024-10-21 23:51:22.719 INFO  [945684] [main@24] Image loaded successfully.
+2024-10-21 23:51:22.724 INFO  [945684] [main@37] The size of the original image matrix is: 341 x 256
+2024-10-21 23:51:22.792 INFO  [945684] [main@46] The Euclidean norm of the Gram matrix is: 1044589759.116514
+2024-10-21 23:51:23.121 INFO  [945684] [main@54] The two largest eigenvalues are: 1039955920.660437 and 90873022.062178
+2024-10-21 23:51:25.169 INFO  [945684] [main@63] The largest singular values of the matrix A are: 32248.347565 and 9532.734239 using Jacobi SVD.
+2024-10-21 23:51:26.519 INFO  [945684] [main@67] The largest singular values of the matrix A are: 32248.347565 and 9532.734239 using BDC SVD.
+2024-10-21 23:51:26.519 INFO  [945684] [main@73] The norm of the diagonal matrix Sigma is: 35497.163746
+2024-10-21 23:51:26.521 INFO  [945684] [main@80] The number of nonzero entries in the matrix C1 is: 13640
+2024-10-21 23:51:26.521 INFO  [945684] [main@81] The number of nonzero entries in the matrix D1 is: 10240
+2024-10-21 23:51:26.526 INFO  [945684] [main@88] The number of nonzero entries in the matrix C2 is: 27280
+2024-10-21 23:51:26.526 INFO  [945684] [main@89] The number of nonzero entries in the matrix D2 is: 20480
+2024-10-21 23:51:26.605 INFO  [945684] [main@111] The Euclidean norm of the checkerboard image is: 36062.445841
+2024-10-21 23:51:27.511 INFO  [945684] [main@124] The largest singular values of the noisy checkerboard image are: 25535.040248 and 25483.513147 using Jacobi SVD.
+2024-10-21 23:52:16.514 INFO  [947182] [main@24] Image loaded successfully.
+2024-10-21 23:52:16.520 INFO  [947182] [main@37] The size of the original image matrix is: 341 x 256
+2024-10-21 23:52:16.587 INFO  [947182] [main@46] The Euclidean norm of the Gram matrix is: 1044589759.116514
+2024-10-21 23:52:16.912 INFO  [947182] [main@54] The two largest eigenvalues are: 1039955920.660437 and 90873022.062178
+2024-10-21 23:52:18.954 INFO  [947182] [main@63] The largest singular values of the matrix A are: 32248.347565 and 9532.734239 using Jacobi SVD.
+2024-10-21 23:52:20.266 INFO  [947182] [main@67] The largest singular values of the matrix A are: 32248.347565 and 9532.734239 using BDC SVD.
+2024-10-21 23:52:20.266 INFO  [947182] [main@73] The norm of the diagonal matrix Sigma is: 35497.163746
+2024-10-21 23:52:20.268 INFO  [947182] [main@80] The number of nonzero entries in the matrix C1 is: 13640
+2024-10-21 23:52:20.268 INFO  [947182] [main@81] The number of nonzero entries in the matrix D1 is: 10240
+2024-10-21 23:52:20.273 INFO  [947182] [main@88] The number of nonzero entries in the matrix C2 is: 27280
+2024-10-21 23:52:20.273 INFO  [947182] [main@89] The number of nonzero entries in the matrix D2 is: 20480
+2024-10-21 23:52:20.354 INFO  [947182] [main@111] The Euclidean norm of the checkerboard image is: 36062.445841
+2024-10-21 23:52:21.247 INFO  [947182] [main@124] The largest singular values of the noisy checkerboard image are: 25535.040248 and 25483.513147 using Jacobi SVD.
+2024-10-21 23:55:24.216 INFO  [951571] [main@24] Image loaded successfully.
+2024-10-21 23:55:24.221 INFO  [951571] [main@37] The size of the original image matrix is: 341 x 256
+2024-10-21 23:55:24.289 INFO  [951571] [main@46] The Euclidean norm of the Gram matrix is: 1044589759.116514
+2024-10-21 23:55:24.612 INFO  [951571] [main@54] The two largest eigenvalues are: 1039955920.660437 and 90873022.062178
+2024-10-21 23:55:26.639 INFO  [951571] [main@63] The largest singular values of the matrix A are: 32248.347565 and 9532.734239 using Jacobi SVD.
+2024-10-21 23:55:27.956 INFO  [951571] [main@67] The largest singular values of the matrix A are: 32248.347565 and 9532.734239 using BDC SVD.
+2024-10-21 23:55:27.957 INFO  [951571] [main@73] The norm of the diagonal matrix Sigma is: 35497.163746
+2024-10-21 23:55:27.958 INFO  [951571] [main@80] The number of nonzero entries in the matrix C1 is: 13640
+2024-10-21 23:55:27.958 INFO  [951571] [main@81] The number of nonzero entries in the matrix D1 is: 10240
+2024-10-21 23:55:27.964 INFO  [951571] [main@88] The number of nonzero entries in the matrix C2 is: 27280
+2024-10-21 23:55:27.964 INFO  [951571] [main@89] The number of nonzero entries in the matrix D2 is: 20480
+2024-10-21 23:55:28.043 INFO  [951571] [main@111] The Euclidean norm of the checkerboard image is: 36062.445841
+2024-10-21 23:55:28.936 INFO  [951571] [main@124] The largest singular values of the noisy checkerboard image are: 25535.040248 and 25483.513147 using Jacobi SVD.
+2024-10-21 23:55:28.936 INFO  [951571] [main@133] The size of the matrix C3 is: 200 x 5
+2024-10-21 23:55:28.936 INFO  [951571] [main@134] The size of the matrix D3 is: 5 x 200
+2024-10-21 23:55:28.936 INFO  [951571] [main@140] The size of the matrix C4 is: 200 x 10
+2024-10-21 23:55:28.936 INFO  [951571] [main@141] The size of the matrix D4 is: 10 x 200

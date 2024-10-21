@@ -287,3 +287,95 @@
 2024-10-18 23:12:58.824 INFO  [2232320] [main@535] Solver: SparseLU
 2024-10-18 23:12:58.825 INFO  [2232320] [main@536] Final residual: 4.1256813710143794e-11
 2024-10-18 23:12:58.861 INFO  [2232320] [main@552] Image saved for solver: SparseLU to ../ch1_result/SparseLU_y.png
+2024-10-21 23:10:29.569 INFO  [893274] [main@273] The size of the original image matrix is: 341 x 256
+2024-10-21 23:10:29.591 INFO  [893274] [main@293] Noisy image saved to: ../ch1_result/output_noisy.png
+2024-10-21 23:10:29.597 INFO  [893274] [main@311] The Euclidean norm of v is: 35497.163746
+2024-10-21 23:10:29.782 INFO  [893274] [main@323] The number of non-zero entries in A1 is: 782086
+2024-10-21 23:10:29.816 INFO  [893274] [main@340] Smoothed image saved to: ../ch1_result/output_smoothed.png
+2024-10-21 23:10:29.987 INFO  [893274] [main@348] The number of non-zero entries in A2 is: 435286
+2024-10-21 23:10:29.993 INFO  [893274] [main@350] Matrix A2 is symmetric: 0
+2024-10-21 23:10:30.108 INFO  [893274] [main@369] Sharpened image saved to : ../ch1_result/output_sharpened.png
+2024-10-21 23:10:34.245 INFO  [893274] [main@417] Solver: cg
+2024-10-21 23:10:34.245 INFO  [893274] [main@418] Iterations: 1001
+2024-10-21 23:10:34.245 INFO  [893274] [main@419] Residual: 197.9200682412025
+2024-10-21 23:10:34.245 INFO  [893274] [main@420] Elapsed time: 3.532216 seconds
+2024-10-21 23:10:34.587 INFO  [893274] [main@417] Solver: bicg
+2024-10-21 23:10:34.587 INFO  [893274] [main@418] Iterations: 29
+2024-10-21 23:10:34.587 INFO  [893274] [main@419] Residual: 7.903487135350312e-10
+2024-10-21 23:10:34.587 INFO  [893274] [main@420] Elapsed time: 0.200140 seconds
+2024-10-21 23:10:38.074 INFO  [893274] [main@417] Solver: jacobi
+2024-10-21 23:10:38.074 INFO  [893274] [main@418] Iterations: 1001
+2024-10-21 23:10:38.074 INFO  [893274] [main@419] Residual: 9.292460559185734e-07
+2024-10-21 23:10:38.074 INFO  [893274] [main@420] Elapsed time: 3.343742 seconds
+2024-10-21 23:10:38.354 INFO  [893274] [main@417] Solver: gs
+2024-10-21 23:10:38.354 INFO  [893274] [main@418] Iterations: 34
+2024-10-21 23:10:38.354 INFO  [893274] [main@419] Residual: 8.100816251849505e-10
+2024-10-21 23:10:38.354 INFO  [893274] [main@420] Elapsed time: 0.139363 seconds
+2024-10-21 23:10:38.599 INFO  [893274] [main@417] Solver: bicgstab
+2024-10-21 23:10:38.599 INFO  [893274] [main@418] Iterations: 15
+2024-10-21 23:10:38.599 INFO  [893274] [main@419] Residual: 3.1783562251875146e-10
+2024-10-21 23:10:38.599 INFO  [893274] [main@420] Elapsed time: 0.103867 seconds
+2024-10-21 23:10:38.907 INFO  [893274] [main@417] Solver: gmres
+2024-10-21 23:10:38.907 INFO  [893274] [main@418] Iterations: 27
+2024-10-21 23:10:38.907 INFO  [893274] [main@419] Residual: 5.929124607287312e-10
+2024-10-21 23:10:38.907 INFO  [893274] [main@420] Elapsed time: 0.165403 seconds
+2024-10-21 23:10:39.109 INFO  [893274] [main@450] The number of non-zero entries in A3 is: 435286
+2024-10-21 23:10:39.113 INFO  [893274] [main@452] Matrix A3 is symmetric: 1
+2024-10-21 23:10:39.197 INFO  [893274] [main@469] Edge detection image saved to: ../ch1_result/output_laplacian.png
+2024-10-21 23:10:39.672 INFO  [893274] [main@499] Solver: ConjugateGradient
+2024-10-21 23:10:39.672 INFO  [893274] [main@500] Iterations: 32
+2024-10-21 23:10:39.672 INFO  [893274] [main@501] Final residual: 7.54012072370876e-11
+2024-10-21 23:10:39.687 INFO  [893274] [main@550] Image saved for solver: ConjugateGradient to ../ch1_result/ConjugateGradient_y.png
+2024-10-21 23:10:40.327 INFO  [893274] [main@516] Solver: BiCGSTAB
+2024-10-21 23:10:40.328 INFO  [893274] [main@517] Iterations: 23
+2024-10-21 23:10:40.328 INFO  [893274] [main@518] Final residual: 7.219492513089352e-11
+2024-10-21 23:10:40.344 INFO  [893274] [main@550] Image saved for solver: BiCGSTAB to ../ch1_result/BiCGSTAB_y.png
+2024-10-21 23:10:54.463 INFO  [893274] [main@533] Solver: SparseLU
+2024-10-21 23:10:54.463 INFO  [893274] [main@534] Final residual: 4.1256813710143794e-11
+2024-10-21 23:10:54.498 INFO  [893274] [main@550] Image saved for solver: SparseLU to ../ch1_result/SparseLU_y.png
+2024-10-21 23:19:26.563 INFO  [904517] [main@273] The size of the original image matrix is: 341 x 256
+2024-10-21 23:19:26.585 INFO  [904517] [main@293] Noisy image saved to: ../ch1_result/output_noisy.png
+2024-10-21 23:19:26.589 INFO  [904517] [main@311] The Euclidean norm of v is: 35497.163746
+2024-10-21 23:19:26.759 INFO  [904517] [main@323] The number of non-zero entries in A1 is: 782086
+2024-10-21 23:19:26.792 INFO  [904517] [main@340] Smoothed image saved to: ../ch1_result/output_smoothed.png
+2024-10-21 23:19:26.962 INFO  [904517] [main@348] The number of non-zero entries in A2 is: 435286
+2024-10-21 23:19:26.968 INFO  [904517] [main@350] Matrix A2 is symmetric: 0
+2024-10-21 23:19:27.081 INFO  [904517] [main@369] Sharpened image saved to : ../ch1_result/output_sharpened.png
+2024-10-21 23:19:31.169 INFO  [904517] [main@417] Solver: cg
+2024-10-21 23:19:31.169 INFO  [904517] [main@418] Iterations: 1001
+2024-10-21 23:19:31.169 INFO  [904517] [main@419] Residual: 197.9200682412025
+2024-10-21 23:19:31.169 INFO  [904517] [main@420] Elapsed time: 3.517195 seconds
+2024-10-21 23:19:31.510 INFO  [904517] [main@417] Solver: bicg
+2024-10-21 23:19:31.510 INFO  [904517] [main@418] Iterations: 29
+2024-10-21 23:19:31.510 INFO  [904517] [main@419] Residual: 7.903487135350312e-10
+2024-10-21 23:19:31.510 INFO  [904517] [main@420] Elapsed time: 0.197505 seconds
+2024-10-21 23:19:34.939 INFO  [904517] [main@417] Solver: jacobi
+2024-10-21 23:19:34.939 INFO  [904517] [main@418] Iterations: 1001
+2024-10-21 23:19:34.939 INFO  [904517] [main@419] Residual: 9.292460559185734e-07
+2024-10-21 23:19:34.939 INFO  [904517] [main@420] Elapsed time: 3.282039 seconds
+2024-10-21 23:19:35.224 INFO  [904517] [main@417] Solver: gs
+2024-10-21 23:19:35.224 INFO  [904517] [main@418] Iterations: 34
+2024-10-21 23:19:35.224 INFO  [904517] [main@419] Residual: 8.100816251849505e-10
+2024-10-21 23:19:35.224 INFO  [904517] [main@420] Elapsed time: 0.141199 seconds
+2024-10-21 23:19:35.470 INFO  [904517] [main@417] Solver: bicgstab
+2024-10-21 23:19:35.470 INFO  [904517] [main@418] Iterations: 15
+2024-10-21 23:19:35.470 INFO  [904517] [main@419] Residual: 3.1783562251875146e-10
+2024-10-21 23:19:35.470 INFO  [904517] [main@420] Elapsed time: 0.100909 seconds
+2024-10-21 23:19:35.788 INFO  [904517] [main@417] Solver: gmres
+2024-10-21 23:19:35.788 INFO  [904517] [main@418] Iterations: 27
+2024-10-21 23:19:35.788 INFO  [904517] [main@419] Residual: 5.929124607287312e-10
+2024-10-21 23:19:35.788 INFO  [904517] [main@420] Elapsed time: 0.172600 seconds
+2024-10-21 23:19:36.007 INFO  [904517] [main@450] The number of non-zero entries in A3 is: 435286
+2024-10-21 23:19:36.011 INFO  [904517] [main@452] Matrix A3 is symmetric: 1
+2024-10-21 23:19:36.101 INFO  [904517] [main@469] Edge detection image saved to: ../ch1_result/output_laplacian.png
+2024-10-21 23:19:36.595 INFO  [904517] [main@499] Solver: ConjugateGradient
+2024-10-21 23:19:36.595 INFO  [904517] [main@500] Iterations: 32
+2024-10-21 23:19:36.595 INFO  [904517] [main@501] Final residual: 7.54012072370876e-11
+2024-10-21 23:19:36.613 INFO  [904517] [main@550] Image saved for solver: ConjugateGradient to ../ch1_result/ConjugateGradient_y.png
+2024-10-21 23:19:37.276 INFO  [904517] [main@516] Solver: BiCGSTAB
+2024-10-21 23:19:37.276 INFO  [904517] [main@517] Iterations: 23
+2024-10-21 23:19:37.276 INFO  [904517] [main@518] Final residual: 7.219492513089352e-11
+2024-10-21 23:19:37.296 INFO  [904517] [main@550] Image saved for solver: BiCGSTAB to ../ch1_result/BiCGSTAB_y.png
+2024-10-21 23:19:51.553 INFO  [904517] [main@533] Solver: SparseLU
+2024-10-21 23:19:51.554 INFO  [904517] [main@534] Final residual: 4.1256813710143794e-11
+2024-10-21 23:19:51.589 INFO  [904517] [main@550] Image saved for solver: SparseLU to ../ch1_result/SparseLU_y.png

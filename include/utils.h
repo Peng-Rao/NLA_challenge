@@ -8,10 +8,13 @@ bool loadImage(const char *imagePath, Eigen::MatrixXd &red, Eigen::MatrixXd &gre
                int &height, int &channels);
 
 
-Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic> convertToUnsignedChar(const Eigen::MatrixXd &matrix);
+Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>
+convertToUnsignedChar(const Eigen::MatrixXd &matrix);
 
 void exportMatrixMarketExtended(const Eigen::SparseMatrix<double> &mat, const Eigen::VectorXd &vec,
                                 const std::string &filename);
 
 bool saveMatrixMarketToImage(const std::string &inputFilePath, const std::string &outputFilePath, int height,
                              int width);
+
+bool saveImage(const std::string &outputFilePath, const Eigen::MatrixXd &data, int height, int width);

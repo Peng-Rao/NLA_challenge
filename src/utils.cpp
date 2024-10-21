@@ -42,7 +42,8 @@ bool loadImage(const char *imagePath, Eigen::MatrixXd &red, Eigen::MatrixXd &gre
 
 
 // FUnction to cast Eigen::MatrixXd to unsigned char
-Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic> convertToUnsignedChar(const Eigen::MatrixXd &matrix) {
+Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>
+convertToUnsignedChar(const Eigen::MatrixXd &matrix) {
     return matrix.unaryExpr([](const double val) -> unsigned char {
         return static_cast<unsigned char>(std::min(255.0, std::max(0.0, val))); // Clip values between 0 and 255
     });
@@ -106,5 +107,13 @@ bool saveMatrixMarketToImage(const std::string &inputFilePath, const std::string
         return false;
     }
 
+    return true;
+}
+
+// Function to save an image
+bool saveImage(const std::string &outputFilePath, const Eigen::MatrixXd &data, const int height, const int width) {
+    if (stbi_write_png(outputFilePath.c_str(), width, height, 1, convertToUnsignedChar(data).data(), width) == 0) {
+        return false;
+    }
     return true;
 }
