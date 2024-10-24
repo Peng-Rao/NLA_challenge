@@ -15,24 +15,17 @@ Eigen::MatrixXd convertToGrayscale(const Eigen::MatrixXd &red, const Eigen::Matr
 }
 
 // Function to load an image
-bool loadImage(const char *imagePath, Eigen::MatrixXd &red, Eigen::MatrixXd &green, Eigen::MatrixXd &blue, int &width,
-               int &height, int &channels) {
-    unsigned char *image_data = stbi_load(imagePath, &width, &height, &channels, 3);
+bool loadImage(const char *imagePath, Eigen::MatrixXd &image_matrix, int &width, int &height, int &channels) {
+    unsigned char *image_data = stbi_load(imagePath, &width, &height, &channels, 1);
 
     if (!image_data) {
         return false;
     }
 
-    red = Eigen::MatrixXd(height, width);
-    green = Eigen::MatrixXd(height, width);
-    blue = Eigen::MatrixXd(height, width);
-
+    image_matrix.resize(height, width);
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
-            const int index = (i * width + j) * 3;
-            red(i, j) = static_cast<double>(image_data[index]) / 255.0;
-            green(i, j) = static_cast<double>(image_data[index + 1]) / 255.0;
-            blue(i, j) = static_cast<double>(image_data[index + 2]) / 255.0;
+            image_matrix(i, j) = static_cast<double>(image_data[i * width + j]);
         }
     }
 

@@ -1,5 +1,6 @@
 #include "utils.h"
 
+#include <Eigen/Core>
 #include <Eigen/Eigenvalues>
 #include <Eigen/SVD>
 #include <plog/Initializers/RollingFileInitializer.h>
@@ -18,25 +19,18 @@ int main(int argc, char *argv[]) {
     // Load the iamge as matrix A with size m times n
     int width, height, channels;
     auto *image_input_path = "/Users/raopend/Workspace/NLA_challenge/photos/256px-Albert_Einstein_Head.jpg";
-    Eigen::MatrixXd red(height, width), green(height, width), blue(height, width);
-
-    if (loadImage(image_input_path, red, green, blue, width, height, channels)) {
+    Eigen::MatrixXd image_matrix;
+    if (loadImage(image_input_path, image_matrix, width, height, channels)) {
         PLOG_INFO << "Image loaded successfully.";
     } else {
         PLOG_ERROR << "Failed to load the image.";
         return EXIT_FAILURE;
     }
 
-    // build the grayscale image matrix
-    const Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> grayscale_image_matrix =
-            convertToGrayscale(red, green, blue).unaryExpr([](const double val) -> unsigned char {
-                return static_cast<unsigned char>(val * 255.0);
-            });
-
     // Report the size of the matrix
     PLOG_INFO << "The size of the original image matrix is: " + std::to_string(height) + " x " + std::to_string(width);
 
-    Eigen::MatrixXd A = grayscale_image_matrix.cast<double>();
+    Eigen::MatrixXd A = image_matrix;
 
     // compute Gram matrix
     const Eigen::MatrixXd gram_matrix = A.transpose() * A;
@@ -73,7 +67,7 @@ int main(int argc, char *argv[]) {
     PLOG_INFO << "The norm of the diagonal matrix Sigma is: " + std::to_string(Sigma.norm());
 
     // use truncated SVD k = 40
-    const int k1{40};
+    constexpr int k1{40};
     const Eigen::MatrixXd C1 = bdcs_svd.matrixU().leftCols(k1);
     const Eigen::MatrixXd D1 = Sigma.topLeftCorner(k1, k1) * bdcs_svd.matrixV().leftCols(k1).transpose();
     // Report the number of nonzero entries in the matrices C1 and D1
@@ -81,7 +75,7 @@ int main(int argc, char *argv[]) {
     PLOG_INFO << "The number of nonzero entries in the matrix D1 is: " + std::to_string(D1.nonZeros());
 
     // use truncated SVD k = 80
-    const int k2{80};
+    constexpr int k2{80};
     const Eigen::MatrixXd C2 = bdcs_svd.matrixU().leftCols(k2);
     const Eigen::MatrixXd D2 = Sigma.topLeftCorner(k2, k2) * bdcs_svd.matrixV().leftCols(k2).transpose();
     // Report the number of nonzero entries in the matrices C
@@ -98,11 +92,13 @@ int main(int argc, char *argv[]) {
     saveImage("../ch2_result/original_image.png", A, height, width);
 
     // Using Eigen create a black and white checkerboard image of size 200x200 pixels, ranging from 0 to 255
-    const int checkerboard_size{200};
+    constexpr int checkerboard_size{200};
     Eigen::MatrixXd checkerboard_image(checkerboard_size, checkerboard_size);
     for (int i = 0; i < checkerboard_size; ++i) {
         for (int j = 0; j < checkerboard_size; ++j) {
-            checkerboard_image(i, j) = (i + j) % 2 == 0 ? 0 : 255;
+            // checkerboard_image(i, j) = (i + j) % 2 == 0 ? 0 : 255;
+            // 8 timms 8 checkerboard
+            checkerboard_image(i, j) = ((i / 25) + (j / 25)) % 2 == 0 ? 0 : 255;
         }
     }
     // Export the checkerboard image to a .png file
