@@ -8,7 +8,6 @@
 #include <unsupported/Eigen/SparseExtra>
 
 #include <cstdlib>
-#include <stb_image_write.h>
 #include <string>
 
 int main(int argc, char *argv[]) {
@@ -17,10 +16,10 @@ int main(int argc, char *argv[]) {
     plog::init(plog::debug, "../ch2_result/log.txt");
 
     // Load the iamge as matrix A with size m times n
-    int width, height, channels;
+    int width, height;
     auto *image_input_path = "/Users/raopend/Workspace/NLA_challenge/photos/256px-Albert_Einstein_Head.jpg";
     Eigen::MatrixXd image_matrix;
-    if (loadImage(image_input_path, image_matrix, width, height, channels)) {
+    if (int channels; loadImage(image_input_path, image_matrix, width, height, channels)) {
         PLOG_INFO << "Image loaded successfully.";
     } else {
         PLOG_ERROR << "Failed to load the image.";
