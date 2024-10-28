@@ -144,5 +144,14 @@ int main(int argc, char *argv[]) {
               checkerboard_size);
     saveImage("../ch2_result/compressed_noisy_checkerboard_image_k10.png", A_tile4, checkerboard_size,
               checkerboard_size);
+
+    // comment
+    /*
+     * The compressed images we obtained are very similar to the original image.
+     * Using the truncated SVD method, we discarded the smaller singular values, image compression becomes lossy, but
+     * good image compression is virtually undetectable by the human visual system. We also noticed that SVD can also be
+     * used to denoise images, because the rank of checkerboard is 2,it is possible to construct a low-rank
+     * approximation matrix with two pieces when the noise is really small.
+     */
     return EXIT_SUCCESS;
 }
