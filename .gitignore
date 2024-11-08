@@ -64,16 +64,19 @@ fabric.properties
 
 # vscode
 .vscode/
-
-CMakeLists.txt.user
-CMakeCache.txt
-CMakeFiles
-CMakeScripts
-Testing
-Makefile
-cmake_install.cmake
-install_manifest.txt
-compile_commands.json
-CTestTestfile.cmake
-_deps
 CMakeUserPresets.json
+
+eigvec.txt
+hist.txt
+sol.txt
+
+extern/lis/lib/
+extern/lis/bin/
+extern/lis/share/
+
+eigen1
+eigen2
+test1
+
+iters.txt
+res.txt

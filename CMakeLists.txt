@@ -9,6 +9,8 @@ link_directories(extern/lis/lib)
 file(
         GLOB_RECURSE mains RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/challenge*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/exam*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/benchmark.cpp"
 )
 
 find_package(Stb REQUIRED)
@@ -20,7 +22,9 @@ foreach (mainfile IN LISTS mains)
     # Get file name without directory
     get_filename_component(mainname ${mainfile} NAME_WE)
     add_executable(${mainname} ${mainfile}
-            src/utils.cpp)
+            src/utils.cpp
+            include/
+    )
     target_include_directories(${mainname} PRIVATE include)
     target_include_directories(${mainname} PRIVATE ${Stb_INCLUDE_DIR})
     target_link_libraries(${mainname} PRIVATE Eigen3::Eigen)

@@ -99,7 +99,7 @@ $$
 \end{pmatrix}.
 $$
 
-- Display the Euclidean norm of $\tilde{A}$ denoted by $||\tilde{A}||$. Display also $||\tilde{A}_S||$ where $\tilde{A}_S$ is the symmetric part of $\tilde{A}$, namely $2\tilde{A}_S = \tilde{A} + \tilde{A}^{T}$
+- Display the Euclidean norm of $\tilde{A}$ denoted by $||\tilde{A}||$. Display also $||\tilde{A}_S||$ where $\tilde{A}_S$ is the  part of $\tilde{A}$, namely $2\tilde{A}_S = \tilde{A} + \tilde{A}^{T}$
 
 - Declare a vector $\tilde{v}$ of length 50 with all the entries equal to $1$
 

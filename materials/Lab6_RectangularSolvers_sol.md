@@ -148,7 +148,7 @@ We want to compare the `SparseQR` direct solver with respect to the `BDCSVD` sol
 
  - Consider the rectangular matrices used for Exercise 1.
 
- ```
+ ```cpp
  #include <Eigen/Core>
 #include <Eigen/SparseQR>
 #include <Eigen/SVD>
